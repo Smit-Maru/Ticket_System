@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { deleteUser, getUsers } from "../../api/userApi";
-import { Link } from "react-router-dom";
+import { deleteUser, getUsers } from "../../../api/userApi";
+import { Link, useNavigate } from "react-router-dom";
 
 function Users() {
+  const navigate = useNavigate();
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -68,6 +70,11 @@ function Users() {
     }
   };
 
+  const handleEdit = (id) => {
+    // navigate to the user add page and call create and update api
+    navigate(`/admin/users/add?id=${id}`)
+  }
+
   return (
     <div>
       <div className="admin-header">
@@ -127,9 +134,7 @@ function Users() {
                   <td>
                     <button
                       className="edit-btn"
-                      onClick={() => {
-                        console.log("Edit user:", user.userid);
-                      }}
+                      onClick={() => handleEdit(user.userid)}
                     >
                       Edit
                     </button>

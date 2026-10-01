@@ -5,3 +5,27 @@ export const getStaff = async () => {
 
   return response.data;
 };
+
+export const getStaffById = async (id) => {
+  const response = await apiClient.get(`/staff/${id}`);
+
+  return response.data;
+};
+
+export const createStaff = async (staffData) => {
+  const response = await apiClient.post("/staff", staffData);
+
+  return response.data;
+};
+
+export const updateStaff = async (staffId, staffData) => {
+  const response = await apiClient.put(`/staff/${staffId}`, staffData);
+
+  return response.data;
+};
+
+export const deleteStaff = async (staffId) => {
+  const response = await apiClient.delete(`/staff/${staffId}`);
+
+  return response.data;
+};

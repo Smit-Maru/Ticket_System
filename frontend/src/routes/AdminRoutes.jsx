@@ -1,9 +1,9 @@
 import { useRoutes } from "react-router-dom";
 
-import Users from "../pages/admin/Users";
-import Staff from "../pages/admin/Staff";
-import Tickets from "../pages/admin/Tickets";
-import TicketDetails from "../pages/admin/TicketDetails";
+import Users from "../pages/admin/users/Users";
+import Staff from "../pages/admin/staff/Staff";
+import Tickets from "../pages/admin/tickets/Tickets";
+import TicketDetails from "../pages/admin/tickets/TicketDetails";
 import Settings from "../pages/admin/Settings";
 import AdminLayout from "../layouts/AdminLayout";
 import Dashboard from "../pages/admin/Dashboard";

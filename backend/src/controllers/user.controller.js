@@ -40,9 +40,9 @@ export const getUsersById = async (req, res) => {
       data: result[0]
     });
   } catch (error){
-    res.status(200).json({
-      success: true,
-      data: result[0]
+    res.status(500).json({
+      success: false,
+      message:"Internal server error"
     });
   }
 }

@@ -18,11 +18,13 @@ export const createUser = async (userData) => {
   return response.data;
 };
 
-export const updateUSer = async (userData,userId) => {
+export const updateUser = async (userId, userData) => {
   const response = await apiClient.put(`/users/${userId}`, userData);
 
   return response.data;
 }
+
+export const updateUSer = async (userData, userId) => updateUser(userId, userData);
 
 export const deleteUser = async (userId) => {
   const response = await apiClient.delete(`/users/${userId}`);
