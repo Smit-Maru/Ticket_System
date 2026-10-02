@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "../db/index.js";
-import { users } from "../db/schema/users.js";
+import { users } from "../../drizzle/schema.ts";
 import bcrypt from "bcrypt";
 
 export const getStaff = async (req, res) => {
@@ -24,11 +24,19 @@ export const getStaff = async (req, res) => {
 export const getStaffById = async (req, res) => {
   try {
     const { id } = req.params;
+    const staffId = Number(id);
+
+    if (!Number.isInteger(staffId) || staffId < 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid staff ID",
+      });
+    }
 
     const result = await db
       .select()
       .from(users)
-      .where(and(eq(users.userid, Number(id)), eq(users.role, "staff")));
+      .where(and(eq(users.userid, staffId), eq(users.role, "staff")));
 
     if (result.length === 0) {
       return res.status(404).json({
@@ -164,3 +172,24 @@ export const deleteStaff = async (req, res) => {
     });
   }
 };
+
+export const staffDropdown = async (req, res) => {
+  try{
+    const result = await db
+      .select({ userid: users.userid, name: users.name })
+      .from(users)
+      .where(eq(users.role, "staff"));
+
+      res.status(200).json({
+        success:true,
+        message: "Staff dropdown fetched successfully",
+        data:result
+      })
+  } catch (error) {
+    console.error("Staff Dropdown Error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    })
+  }
+}

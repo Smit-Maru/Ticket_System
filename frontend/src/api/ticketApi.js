@@ -1,0 +1,31 @@
+import apiClient from "./apiClient";
+
+export const getTickets = async () => {
+  const response = await apiClient.get("/tickets");
+
+  return response.data;
+};
+
+export const getTicketById = async (ticketId) => {
+  const response = await apiClient.get(`/tickets/${ticketId}`);
+
+  return response.data;
+};
+
+export const createTicket = async (ticketData) => {
+  const response = await apiClient.post("/tickets", ticketData);
+
+  return response.data;
+};
+
+export const updateTicket = async (ticketId, ticketData) => {
+  const response = await apiClient.put(`/tickets/${ticketId}`, ticketData);
+
+  return response.data;
+};
+
+export const deleteTicket = async (ticketId) => {
+  const response = await apiClient.delete(`/tickets/${ticketId}`);
+
+  return response.data;
+};

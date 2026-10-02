@@ -26,9 +26,9 @@ function AdminSidebar() {
           Tickets
         </Link>
 
-        <Link to="/admin/settings">
+        {/* <Link to="/admin/settings">
           Settings
-        </Link>
+        </Link> */}
 
       </div>
 

@@ -10,6 +10,7 @@ import AddUser from "./pages/admin/users/AddUser";
 import Staff from "./pages/admin/staff/Staff";
 import AddStaff from "./pages/admin/staff/AddStaff";
 import Tickets from "./pages/admin/tickets/Tickets";
+import AddTicket from "./pages/admin/tickets/AddTicket";
 import TicketDetails from "./pages/admin/tickets/TicketDetails";
 import Settings from "./pages/admin/Settings";
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="staff" element={<Staff />} />
           <Route path="staff/add" element={<AddStaff />} />
           <Route path="tickets" element={<Tickets />} />
+          <Route path="tickets/add" element={<AddTicket />} />
           <Route path="tickets/:id" element={<TicketDetails />} />
           <Route path="settings" element={<Settings />} />
         </Route>

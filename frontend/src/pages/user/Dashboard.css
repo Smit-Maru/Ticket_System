@@ -119,6 +119,63 @@
   font-weight: 700;
 }
 
+.ticket-create-form {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 24px;
+  padding: 20px;
+  border: 1px solid #e5eaf1;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.ticket-create-form label {
+  display: grid;
+  gap: 7px;
+  color: #536174;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ticket-create-form input,
+.ticket-create-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #dfe5ed;
+  border-radius: 7px;
+  color: #27364d;
+  font: inherit;
+  font-size: 12px;
+}
+
+.ticket-create-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.ticket-create-form > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.ticket-create-form button {
+  padding: 9px 13px;
+  border: 1px solid #dfe5ed;
+  border-radius: 7px;
+  background: #fff;
+  color: #536174;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ticket-create-form button[type="submit"] {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
 .user-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

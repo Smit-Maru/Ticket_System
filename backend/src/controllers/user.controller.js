@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db/index.js";
-import { users } from "../db/schema/users.js";
+import { users } from "../../drizzle/schema.ts";
 import bcrypt from "bcrypt";
 
 export const getUsers = async (req, res) => {

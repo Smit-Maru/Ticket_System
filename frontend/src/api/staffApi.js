@@ -29,3 +29,9 @@ export const deleteStaff = async (staffId) => {
 
   return response.data;
 };
+
+export const staffDropdown = async () => {
+  const response = await apiClient.get("/staff/dropdown");
+
+  return response.data;
+}

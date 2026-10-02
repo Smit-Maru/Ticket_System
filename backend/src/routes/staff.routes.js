@@ -4,6 +4,7 @@ import {
 	deleteStaff,
 	getStaff,
 	getStaffById,
+	staffDropdown,
 	updateStaff
 } from "../controllers/staff.controller.js";
 
@@ -16,6 +17,7 @@ router.use(authenticate);
 router.use(authorize("admin"));
 
 router.get("/", getStaff);
+router.get("/dropdown", staffDropdown);
 router.get("/:id", getStaffById);
 router.post("/", createStaff);
 router.put("/:id", updateStaff);

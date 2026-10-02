@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import userRoutes from "./routes/user.routes.js";
 import loginRoutes from "./routes/login.routes.js";
 import staffRoutes from "./routes/staff.routes.js";
+import ticketRoutes from "./routes/ticket.routes.js";
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/users", userRoutes);
 app.use("/api/staff", staffRoutes);
+app.use("/api/tickets", ticketRoutes);
 
 app.use("/api", loginRoutes);
 
