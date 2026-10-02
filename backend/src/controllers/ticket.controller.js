@@ -28,8 +28,6 @@ export const getTickets = async (req, res) => {
   try {
     let query = db.select().from(tickets);
 
-    console.log("Staff Id : ", req.user.role);
-
     if (req.user.role === "staff") {
       query = query.where(
         eq(tickets.assignedto, Number(req.user.userId))

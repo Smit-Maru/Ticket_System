@@ -1,3 +1,65 @@
+.ticket-status-badge,
+.ticket-priority-badge {
+  display: inline-flex;
+  min-height: 25px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 9px;
+  border-radius: 5px;
+  background: #edf0f4;
+  color: #59677a;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.ticket-status-badge--open {
+  background: #eaf2ff;
+  color: #3162b7;
+}
+
+.ticket-status-badge--in_progress {
+  background: #fff4df;
+  color: #9a6500;
+}
+
+.ticket-status-badge--waiting_for_user {
+  background: #f1edff;
+  color: #6952a7;
+}
+
+.ticket-status-badge--resolved {
+  background: #e7f7ef;
+  color: #24784d;
+}
+
+.ticket-status-badge--closed {
+  background: #edf0f4;
+  color: #59677a;
+}
+
+.ticket-priority-badge--low {
+  background: #edf7f1;
+  color: #35734f;
+}
+
+.ticket-priority-badge--medium {
+  background: #fff4df;
+  color: #9a6500;
+}
+
+.ticket-priority-badge--high {
+  background: #fff0ed;
+  color: #b84d38;
+}
+
+.ticket-status-badge--unknown,
+.ticket-priority-badge--unknown {
+  background: #edf0f4;
+  color: #59677a;
+}
+
 .ticket-popup-overlay {
   position: fixed;
   top: 0;
@@ -107,4 +169,66 @@
 
 .ticket-popup-footer button:hover {
   background: #111827;
+}
+
+.view-btn,
+.edit-btn,
+.comment-btn,
+.delete-btn {
+  height: 32px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: 5px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* View */
+.view-btn {
+  background-color: #e8f0fe;
+  color: #2563eb;
+}
+
+.view-btn:hover {
+  background-color: #dbe7fd;
+}
+
+/* Edit */
+.edit-btn {
+  background-color: #f0fdf4;
+  color: #16a34a;
+}
+
+.edit-btn:hover {
+  background-color: #dcfce7;
+}
+
+/* Add Comment */
+.comment-btn {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.comment-btn:hover {
+  background-color: #fde68a;
+}
+
+/* Delete */
+.delete-btn {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.delete-btn:hover {
+  background-color: #fee2e2;
+}
+
+/* Disabled Add Comment */
+.comment-btn:disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
 }
