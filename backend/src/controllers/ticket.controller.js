@@ -80,27 +80,18 @@ export const getTicketById = async (req, res) => {
 export const createTicket = async (req, res) => {
   try {
     const { subject, description } = req.body;
-    const isAdmin = req.user.role === "admin";
-    const customerId = isAdmin
-      ? Number(req.body.customerid)
-      : Number(req.user.userId);
-    const priority = isAdmin ? (req.body.priority || "low").toLowerCase() : "low";
-    const status = isAdmin ? req.body.status || "open" : "open";
-    const assignedTo = isAdmin && req.body.assignedto
-      ? Number(req.body.assignedto)
-      : null;
 
-    if (!subject || !description || !Number.isInteger(customerId)) {
+    // Get customer ID from logged-in user's JWT
+    const customerId = Number(req.user.userId);
+
+    if (
+      !subject?.trim() ||
+      !description?.trim() ||
+      !Number.isInteger(customerId)
+    ) {
       return res.status(400).json({
         success: false,
-        message: "Subject, description, and customer are required",
-      });
-    }
-
-    if (!ticketStatusValues.includes(status) || !ticketPriorityValues.includes(priority)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid ticket status or priority",
+        message: "Subject and description are required",
       });
     }
 
@@ -110,21 +101,22 @@ export const createTicket = async (req, res) => {
         subject,
         description,
         customerid: customerId,
-        assignedto: assignedTo,
-        assignedat: assignedTo ? new Date().toISOString() : null,
-        status,
-        priority,
+        assignedto: null,
+        assignedat: null,
+        status: "open",
+        priority: "low",
       })
       .returning();
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Ticket created successfully",
       data: result[0],
     });
   } catch (error) {
     console.error("Create Ticket Error:", error);
-    res.status(500).json({
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -242,4 +234,3 @@ export const deleteTicket = async (req, res) => {
     });
   }
 };
-
