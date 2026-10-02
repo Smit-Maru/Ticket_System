@@ -1,24 +1,20 @@
+import "./StaffNavbar.css";
+
 function StaffNavbar() {
   return (
-    <nav className="staff-navbar">
-
-      <div className="navbar-title">
-        Helpdesk Staff
+    <header className="staff-navbar">
+      <div className="staff-navbar__title">
+        <div>
+          <strong>Helpdesk Staff</strong>
+          {/* <span>Support workspace</span> */}
+        </div>
       </div>
 
       <div className="staff-right">
-
-        <span className="staff-name">
-          Staff
-        </span>
-
-        <button className="logout-btn">
-          Logout
-        </button>
-
+        <span className="staff-name">Staff</span>
+        <button className="staff-logout" type="button">Log out</button>
       </div>
-
-    </nav>
+    </header>
   );
 }
 

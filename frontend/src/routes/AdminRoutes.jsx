@@ -1,3 +1,4 @@
+/*
 import { useRoutes } from "react-router-dom";
 
 import Users from "../pages/admin/users/Users";
@@ -27,3 +28,4 @@ function AdminRoutes() {
 }
 
 export default AdminRoutes;
+*/

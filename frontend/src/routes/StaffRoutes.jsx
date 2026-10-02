@@ -1,3 +1,4 @@
+/*
 import { Navigate, Route, Routes } from "react-router-dom";
 import StaffLayout from "../layouts/StaffLayout";
 import Dashboard from "../pages/staff/Dashboard";
@@ -18,3 +19,4 @@ function StaffRoutes() {
 }
 
 export default StaffRoutes;
+*/

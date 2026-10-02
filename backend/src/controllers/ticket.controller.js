@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, sql  } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { tickets } from "../../drizzle/schema.ts";
 
@@ -28,13 +28,30 @@ export const getTickets = async (req, res) => {
   try {
     let query = db.select().from(tickets);
 
+    console.log("Staff Id : ", req.user.role);
+
     if (req.user.role === "staff") {
-      query = query.where(eq(tickets.assignedto, Number(req.user.userId)));
+      query = query.where(
+        eq(tickets.assignedto, Number(req.user.userId))
+      );
     } else if (req.user.role === "user") {
-      query = query.where(eq(tickets.customerid, Number(req.user.userId)));
+      query = query.where(
+        eq(tickets.customerid, Number(req.user.userId))
+      );
     }
 
-    const result = await query.orderBy(desc(tickets.createdat));
+    const result = await query.orderBy(
+      sql`
+        CASE
+          WHEN ${tickets.status} = 'closed' THEN 4
+          WHEN ${tickets.priority} = 'high' THEN 1
+          WHEN ${tickets.priority} = 'medium' THEN 2
+          WHEN ${tickets.priority} = 'low' THEN 3
+          ELSE 5
+        END
+      `,
+      desc(tickets.createdat)
+    );
 
     res.status(200).json({
       success: true,

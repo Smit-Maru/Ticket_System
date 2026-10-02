@@ -11,7 +11,7 @@ function StaffSidebar() {
       <nav className="staff-nav" aria-label="Staff navigation">
         <NavLink to="/staff/dashboard">Dashboard</NavLink>
         <NavLink to="/staff/tickets">Tickets</NavLink>
-        <NavLink to="/staff/profile">Profile</NavLink>
+        {/* <NavLink to="/staff/profile">Profile</NavLink> */}
       </nav>
     </aside>
   );

@@ -21,7 +21,6 @@ function Login() {
       const response = await loginUser(loginData);
 
       if (response.success) {
-        alert("Login successful");
 
         const role = response.user.role.toLowerCase().trim();
 

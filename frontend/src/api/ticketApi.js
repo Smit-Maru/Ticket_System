@@ -24,6 +24,18 @@ export const updateTicket = async (ticketId, ticketData) => {
   return response.data;
 };
 
+export const getTicketComments = async (ticketId) => {
+  const response = await apiClient.get(`/comment/ticket/${ticketId}`);
+
+  return response.data;
+};
+
+export const addTicketComment = async (ticketId, comment) => {
+  const response = await apiClient.post(`/comment/ticket/${ticketId}`, { comment });
+
+  return response.data;
+};
+
 export const deleteTicket = async (ticketId) => {
   const response = await apiClient.delete(`/tickets/${ticketId}`);
 

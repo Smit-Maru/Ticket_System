@@ -1,7 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
-import StaffRoutes from "./routes/StaffRoutes";
 import UserDashboard from "./pages/user/Dashboard";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -13,6 +12,11 @@ import Tickets from "./pages/admin/tickets/Tickets";
 import AddTicket from "./pages/admin/tickets/AddTicket";
 import TicketDetails from "./pages/admin/tickets/TicketDetails";
 import Settings from "./pages/admin/Settings";
+import StaffLayout from "./layouts/StaffLayout";
+import StaffDashboard from "./pages/staff/Dashboard";
+import StaffTickets from "./pages/staff/Tickets";
+import StaffProfile from "./pages/staff/Profile";
+import StaffTicketDetails from "./pages/staff/StaffTicketDetails";
 
 function App() {
   return (
@@ -33,9 +37,15 @@ function App() {
           <Route path="tickets/:id" element={<TicketDetails />} />
           <Route path="settings" element={<Settings />} />
         </Route>
-        
-        <Route path="/staff/*" element={<StaffRoutes />} />
-        
+
+        <Route path="/staff" element={<StaffLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<StaffDashboard />} />
+          <Route path="tickets" element={<StaffTickets />} />
+          <Route path="tickets/:id" element={<StaffTicketDetails />} />
+          <Route path="profile" element={<StaffProfile />} />
+        </Route>
+
         <Route path="/user/dashboard" element={<UserDashboard />} />
         
         <Route path="*" element={<Navigate to="/login" replace />} />

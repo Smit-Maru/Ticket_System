@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 function AdminSidebar() {
   return (
     <aside className="admin-sidebar">
-
-      <div className="sidebar-logo">
+      <div className="staff-logo">
+        <span>H</span>
         Helpdesk
       </div>
 
