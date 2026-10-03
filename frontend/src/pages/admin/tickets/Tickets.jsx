@@ -9,7 +9,9 @@ import "./Tickets.css";
 import TicketComments from "../../../components/tickets/TicketComments";
 
 function formatTicketLabel(value = "") {
-  return value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+  return value
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function Tickets() {
@@ -31,8 +33,7 @@ function Tickets() {
         setTickets(response.data || []);
       } catch (requestError) {
         setError(
-          requestError.response?.data?.message ||
-            "Unable to load tickets.",
+          requestError.response?.data?.message || "Unable to load tickets.",
         );
       } finally {
         setLoading(false);
@@ -52,19 +53,14 @@ function Tickets() {
 
       if (response.success) {
         setTickets((currentTickets) =>
-          currentTickets.filter(
-            (ticket) => ticket.ticketid !== ticketId,
-          ),
+          currentTickets.filter((ticket) => ticket.ticketid !== ticketId),
         );
       } else {
-        setError(
-          response.message || "Unable to delete ticket.",
-        );
+        setError(response.message || "Unable to delete ticket.");
       }
     } catch (requestError) {
       setError(
-        requestError.response?.data?.message ||
-          "Unable to delete ticket.",
+        requestError.response?.data?.message || "Unable to delete ticket.",
       );
     }
   }
@@ -83,8 +79,7 @@ function Tickets() {
       }
     } catch (requestError) {
       setError(
-        requestError.response?.data?.message ||
-          "Unable to get ticket details.",
+        requestError.response?.data?.message || "Unable to get ticket details.",
       );
     }
   };
@@ -101,10 +96,7 @@ function Tickets() {
           <p>Manage customer support tickets.</p>
         </div>
 
-        <Link
-          className="admin-header-button"
-          to="/admin/tickets/add"
-        >
+        <Link className="admin-header-button" to="/admin/tickets/add">
           Add Ticket
         </Link>
       </div>
@@ -136,13 +128,11 @@ function Tickets() {
               </tr>
             )}
 
-            {!loading &&
-              !error &&
-              tickets.length === 0 && (
-                <tr>
-                  <td colSpan="7">No tickets found.</td>
-                </tr>
-              )}
+            {!loading && !error && tickets.length === 0 && (
+              <tr>
+                <td colSpan="7">No tickets found.</td>
+              </tr>
+            )}
 
             {!loading &&
               !error &&
@@ -153,30 +143,29 @@ function Tickets() {
                   <td>{ticket.subject}</td>
 
                   <td>
-                    <span className={`ticket-status-badge ticket-status-badge--${ticket.status || "unknown"}`}>
+                    <span
+                      className={`ticket-status-badge ticket-status-badge--${ticket.status || "unknown"}`}
+                    >
                       {formatTicketLabel(ticket.status)}
                     </span>
                   </td>
 
                   <td>
-                    <span className={`ticket-priority-badge ticket-priority-badge--${ticket.priority?.toLowerCase() || "unknown"}`}>
+                    <span
+                      className={`ticket-priority-badge ticket-priority-badge--${ticket.priority?.toLowerCase() || "unknown"}`}
+                    >
                       {formatTicketLabel(ticket.priority)}
                     </span>
                   </td>
 
-                  <td>{ticket.customerid}</td>
+                  <td>{ticket.customerName || "Unknown"}</td>
 
-                  <td>
-                    {ticket.assignedto || "Unassigned"}
-                  </td>
-
+                  <td>{ticket.staffName || "Unassigned"}</td>
                   <td>
                     <button
                       className="view-btn"
                       type="button"
-                      onClick={() =>
-                        handleView(ticket.ticketid)
-                      }
+                      onClick={() => handleView(ticket.ticketid)}
                     >
                       View
                     </button>
@@ -184,9 +173,8 @@ function Tickets() {
                     <button
                       className="edit-btn"
                       type="button"
-                      onClick={() =>
-                        handleEdit(ticket.ticketid)
-                      }
+                      onClick={() => handleEdit(ticket.ticketid)}
+                      disabled={ticket.status === "closed"}
                     >
                       Edit
                     </button>
@@ -195,9 +183,7 @@ function Tickets() {
                       className="comment-btn"
                       type="button"
                       disabled={ticket.status === "closed"}
-                      onClick={() =>
-                        handleComments(ticket)
-                      }
+                      onClick={() => handleComments(ticket)}
                     >
                       Add Comment
                     </button>
@@ -205,9 +191,7 @@ function Tickets() {
                     <button
                       className="delete-btn"
                       type="button"
-                      onClick={() =>
-                        handleDelete(ticket.ticketid)
-                      }
+                      onClick={() => handleDelete(ticket.ticketid)}
                     >
                       Delete
                     </button>
@@ -255,7 +239,9 @@ function Tickets() {
               <div className="ticket-detail">
                 <span>Status</span>
                 <p>
-                  <span className={`ticket-status-badge ticket-status-badge--${selectedTicket.status || "unknown"}`}>
+                  <span
+                    className={`ticket-status-badge ticket-status-badge--${selectedTicket.status || "unknown"}`}
+                  >
                     {formatTicketLabel(selectedTicket.status)}
                   </span>
                 </p>
@@ -264,7 +250,9 @@ function Tickets() {
               <div className="ticket-detail">
                 <span>Priority</span>
                 <p>
-                  <span className={`ticket-priority-badge ticket-priority-badge--${selectedTicket.priority?.toLowerCase() || "unknown"}`}>
+                  <span
+                    className={`ticket-priority-badge ticket-priority-badge--${selectedTicket.priority?.toLowerCase() || "unknown"}`}
+                  >
                     {formatTicketLabel(selectedTicket.priority)}
                   </span>
                 </p>
@@ -277,10 +265,7 @@ function Tickets() {
 
               <div className="ticket-detail">
                 <span>Assigned Staff</span>
-                <p>
-                  {selectedTicket.assignedto ||
-                    "Unassigned"}
-                </p>
+                <p>{selectedTicket.assignedto || "Unassigned"}</p>
               </div>
 
               <div className="ticket-detail">
@@ -290,10 +275,7 @@ function Tickets() {
 
               <div className="ticket-detail">
                 <span>Assigned At</span>
-                <p>
-                  {selectedTicket.assignedat ||
-                    "Not assigned"}
-                </p>
+                <p>{selectedTicket.assignedat || "Not assigned"}</p>
               </div>
             </div>
 

@@ -15,6 +15,7 @@ function AddTicket() {
   const ticketId = searchParams.get("id");
   const isEditMode = Boolean(ticketId);
 
+  
   const [form, setForm] = useState({
     subject: "",
     description: "",
@@ -148,9 +149,9 @@ function AddTicket() {
               />
             </label>
 
-            <label>
+            {/* <label>
               Customer ID
-              <input
+              <input hidden
                 name="customerid"
                 type="number"
                 min="1"
@@ -159,7 +160,7 @@ function AddTicket() {
                 required
                 disabled={isEditMode}
               />
-            </label>
+            </label> */}
 
             <label>
               Assigned staff

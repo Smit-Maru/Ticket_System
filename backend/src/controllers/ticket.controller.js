@@ -1,6 +1,6 @@
-import { and, desc, eq, sql  } from "drizzle-orm";
+import { and, desc, eq, sql, alias } from "drizzle-orm";
 import { db } from "../db/index.js";
-import { tickets } from "../../drizzle/schema.ts";
+import { tickets, users } from "../../drizzle/schema.ts";
 
 const ticketStatusValues = [
   "open",
@@ -26,18 +26,60 @@ function getTicketAccessFilter(user, ticketId) {
 
 export const getTickets = async (req, res) => {
   try {
-    let query = db.select().from(tickets);
+    // Same users table is used for both customer and staff
+    const customer = alias(users, "customer");
+    const staff = alias(users, "staff");
 
+    let query = db
+      .select({
+        ticketid: tickets.ticketid,
+        subject: tickets.subject,
+        status: tickets.status,
+        priority: tickets.priority,
+
+        // Customer information
+        customerId: tickets.customerid,
+        customerName: customer.name,
+
+        // Assigned staff information
+        assignedTo: tickets.assignedto,
+        staffName: staff.name,
+
+        createdat: tickets.createdat,
+      })
+      .from(tickets)
+
+      .leftJoin(
+        customer,
+        eq(tickets.customerid, customer.userid)
+      )
+
+      .leftJoin(
+        staff,
+        eq(tickets.assignedto, staff.userid)
+      );
+
+    // Staff can only see tickets assigned to themselves
     if (req.user.role === "staff") {
       query = query.where(
-        eq(tickets.assignedto, Number(req.user.userId))
-      );
-    } else if (req.user.role === "user") {
-      query = query.where(
-        eq(tickets.customerid, Number(req.user.userId))
+        eq(
+          tickets.assignedto,
+          Number(req.user.userId)
+        )
       );
     }
 
+    // Normal user can only see their own tickets
+    else if (req.user.role === "user") {
+      query = query.where(
+        eq(
+          tickets.customerid,
+          Number(req.user.userId)
+        )
+      );
+    }
+
+    // Admin can see all tickets
     const result = await query.orderBy(
       sql`
         CASE
@@ -55,8 +97,9 @@ export const getTickets = async (req, res) => {
       success: true,
       data: result,
     });
+
   } catch (error) {
-    console.error(error);
+    console.error("Get Tickets Error:", error);
 
     res.status(500).json({
       success: false,
@@ -98,6 +141,7 @@ export const createTicket = async (req, res) => {
 
     // Get customer ID from logged-in user's JWT
     const customerId = Number(req.user.userId);
+
 
     if (
       !subject?.trim() ||
