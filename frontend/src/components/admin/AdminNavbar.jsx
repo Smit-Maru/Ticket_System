@@ -1,3 +1,5 @@
+import LogoutButton from "../common/LogoutButton";
+
 function AdminNavbar() {
   return (
     <nav className="admin-navbar">
@@ -12,9 +14,9 @@ function AdminNavbar() {
           Admin
         </span>
 
-        <button className="logout-btn">
+        <LogoutButton className="logout-btn">
           Logout
-        </button>
+        </LogoutButton>
 
       </div>
 

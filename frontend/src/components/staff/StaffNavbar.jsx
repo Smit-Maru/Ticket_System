@@ -1,4 +1,5 @@
 import "./StaffNavbar.css";
+import LogoutButton from "../common/LogoutButton";
 
 function StaffNavbar() {
   return (
@@ -6,13 +7,14 @@ function StaffNavbar() {
       <div className="staff-navbar__title">
         <div>
           <strong>Helpdesk Staff</strong>
-          {/* <span>Support workspace</span> */}
         </div>
       </div>
 
       <div className="staff-right">
         <span className="staff-name">Staff</span>
-        <button className="staff-logout" type="button">Log out</button>
+        <LogoutButton className="staff-logout">
+          Log out
+        </LogoutButton>
       </div>
     </header>
   );

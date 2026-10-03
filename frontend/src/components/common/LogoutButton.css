@@ -1,0 +1,14 @@
+.logout-error {
+  position: fixed;
+  z-index: 10000;
+  right: 18px;
+  bottom: 18px;
+  max-width: min(360px, calc(100vw - 36px));
+  padding: 11px 14px;
+  border: 1px solid #f1c6c6;
+  border-radius: 6px;
+  background: #fff8f8;
+  color: #a33c3c;
+  box-shadow: 0 8px 24px rgb(31 45 67 / 12%);
+  font-size: 12px;
+}
