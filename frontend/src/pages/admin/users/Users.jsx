@@ -72,8 +72,8 @@ function Users() {
 
   const handleEdit = (id) => {
     // navigate to the user add page and call create and update api
-    navigate(`/admin/users/add?id=${id}`)
-  }
+    navigate(`/admin/users/add?id=${id}`);
+  };
 
   return (
     <div>

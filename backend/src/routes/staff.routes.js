@@ -1,11 +1,11 @@
 import express from "express";
 import {
-	createStaff,
-	deleteStaff,
-	getStaff,
-	getStaffById,
-	staffDropdown,
-	updateStaff
+  createStaff,
+  deleteStaff,
+  getStaff,
+  getStaffById,
+  staffDropdown,
+  updateStaff,
 } from "../controllers/staff.controller.js";
 
 import { authenticate } from "../middleware/auth.middleware.js";

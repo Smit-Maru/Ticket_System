@@ -6,19 +6,15 @@ import StaffSidebar from "../components/staff/StaffSidebar";
 function StaffLayout() {
   return (
     <div className="staff-layout">
-
       <StaffSidebar />
 
       <div className="staff-main">
-
         <StaffNavbar />
 
         <main className="staff-content">
           <Outlet />
         </main>
-
       </div>
-
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import { and, desc, eq, sql, alias } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import { db } from "../db/index.js";
 import { tickets, users } from "../../drizzle/schema.ts";
 
@@ -34,6 +35,7 @@ export const getTickets = async (req, res) => {
       .select({
         ticketid: tickets.ticketid,
         subject: tickets.subject,
+        description: tickets.description,
         status: tickets.status,
         priority: tickets.priority,
 
@@ -49,34 +51,18 @@ export const getTickets = async (req, res) => {
       })
       .from(tickets)
 
-      .leftJoin(
-        customer,
-        eq(tickets.customerid, customer.userid)
-      )
+      .leftJoin(customer, eq(tickets.customerid, customer.userid))
 
-      .leftJoin(
-        staff,
-        eq(tickets.assignedto, staff.userid)
-      );
+      .leftJoin(staff, eq(tickets.assignedto, staff.userid));
 
     // Staff can only see tickets assigned to themselves
     if (req.user.role === "staff") {
-      query = query.where(
-        eq(
-          tickets.assignedto,
-          Number(req.user.userId)
-        )
-      );
+      query = query.where(eq(tickets.assignedto, Number(req.user.userId)));
     }
 
     // Normal user can only see their own tickets
     else if (req.user.role === "user") {
-      query = query.where(
-        eq(
-          tickets.customerid,
-          Number(req.user.userId)
-        )
-      );
+      query = query.where(eq(tickets.customerid, Number(req.user.userId)));
     }
 
     // Admin can see all tickets
@@ -90,14 +76,13 @@ export const getTickets = async (req, res) => {
           ELSE 5
         END
       `,
-      desc(tickets.createdat)
+      desc(tickets.createdat),
     );
 
     res.status(200).json({
       success: true,
       data: result,
     });
-
   } catch (error) {
     console.error("Get Tickets Error:", error);
 
@@ -110,10 +95,16 @@ export const getTickets = async (req, res) => {
 
 export const getTicketById = async (req, res) => {
   try {
+    const customer = alias(users, "customer");
+    const staff = alias(users, "staff");
+
     const result = await db
       .select()
       .from(tickets)
-      .where(getTicketAccessFilter(req.user, req.params.id));
+      .where(getTicketAccessFilter(req.user, req.params.id))
+      .leftJoin(customer, eq(tickets.customerid, customer.userid))
+
+      .leftJoin(staff, eq(tickets.assignedto, staff.userid));
 
     if (result.length === 0) {
       return res.status(404).json({
@@ -141,7 +132,6 @@ export const createTicket = async (req, res) => {
 
     // Get customer ID from logged-in user's JWT
     const customerId = Number(req.user.userId);
-
 
     if (
       !subject?.trim() ||
@@ -185,10 +175,7 @@ export const createTicket = async (req, res) => {
 export const updateTicket = async (req, res) => {
   try {
     const ticketFilter = getTicketAccessFilter(req.user, req.params.id);
-    const existingTickets = await db
-      .select()
-      .from(tickets)
-      .where(ticketFilter);
+    const existingTickets = await db.select().from(tickets).where(ticketFilter);
 
     if (existingTickets.length === 0) {
       return res.status(404).json({
@@ -223,7 +210,8 @@ export const updateTicket = async (req, res) => {
       }
 
       if (req.body.subject !== undefined) ticketData.subject = req.body.subject;
-      if (req.body.description !== undefined) ticketData.description = req.body.description;
+      if (req.body.description !== undefined)
+        ticketData.description = req.body.description;
     }
 
     if (ticketData.status && !ticketStatusValues.includes(ticketData.status)) {
@@ -233,7 +221,10 @@ export const updateTicket = async (req, res) => {
       });
     }
 
-    if (ticketData.priority && !ticketPriorityValues.includes(ticketData.priority)) {
+    if (
+      ticketData.priority &&
+      !ticketPriorityValues.includes(ticketData.priority)
+    ) {
       return res.status(400).json({
         success: false,
         message: "Invalid ticket priority",

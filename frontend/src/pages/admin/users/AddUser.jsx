@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import {
-  createUser,
-  getUserById,
-  updateUser,
-} from "../../../api/userApi";
+import { createUser, getUserById, updateUser } from "../../../api/userApi";
 import "./AddUser.css";
 
 function AddUser() {
@@ -39,9 +35,7 @@ function AddUser() {
         const response = await getUserById(userId);
 
         if (!response.success) {
-          throw new Error(
-            response.message || "Unable to get user."
-          );
+          throw new Error(response.message || "Unable to get user.");
         }
 
         const user = response.data;
@@ -55,8 +49,8 @@ function AddUser() {
       } catch (requestError) {
         setError(
           requestError.response?.data?.message ||
-          requestError.message ||
-          "Unable to get user."
+            requestError.message ||
+            "Unable to get user.",
         );
       } finally {
         setLoading(false);
@@ -93,9 +87,7 @@ function AddUser() {
       if (!response.success) {
         throw new Error(
           response.message ||
-          (isEditMode
-            ? "Unable to update user."
-            : "Unable to create user.")
+            (isEditMode ? "Unable to update user." : "Unable to create user."),
         );
       }
 
@@ -103,8 +95,8 @@ function AddUser() {
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ||
-        requestError.message ||
-        "Something went wrong."
+          requestError.message ||
+          "Something went wrong.",
       );
     } finally {
       setSaving(false);
@@ -113,7 +105,6 @@ function AddUser() {
 
   return (
     <section className="add-user-page">
-
       <div className="admin-header">
         <div>
           <h1>{isEditMode ? "Edit user" : "Add user"}</h1>
@@ -129,15 +120,10 @@ function AddUser() {
       {loading ? (
         <p>Loading user...</p>
       ) : (
-        <form
-          className="add-user-form"
-          onSubmit={handleSubmit}
-        >
+        <form className="add-user-form" onSubmit={handleSubmit}>
           <div className="add-user-form-grid">
-
             <label>
               Full name
-
               <input
                 name="name"
                 type="text"
@@ -149,7 +135,6 @@ function AddUser() {
 
             <label>
               Email address
-
               <input
                 name="email"
                 type="email"
@@ -161,7 +146,6 @@ function AddUser() {
 
             <label>
               Password
-
               <input
                 name="password"
                 type="password"
@@ -169,13 +153,10 @@ function AddUser() {
                 onChange={handleChange}
                 required={!isEditMode}
                 placeholder={
-                  isEditMode
-                    ? "Leave empty to keep current password"
-                    : ""
+                  isEditMode ? "Leave empty to keep current password" : ""
                 }
               />
             </label>
-
           </div>
 
           {error && (
@@ -185,18 +166,11 @@ function AddUser() {
           )}
 
           <div className="add-user-actions">
-
-            <Link
-              className="add-user-cancel"
-              to="/admin/users"
-            >
+            <Link className="add-user-cancel" to="/admin/users">
               Cancel
             </Link>
 
-            <button
-              type="submit"
-              disabled={saving}
-            >
+            <button type="submit" disabled={saving}>
               {saving
                 ? isEditMode
                   ? "Updating..."
@@ -205,11 +179,9 @@ function AddUser() {
                   ? "Update user"
                   : "Create user"}
             </button>
-
           </div>
         </form>
       )}
-
     </section>
   );
 }

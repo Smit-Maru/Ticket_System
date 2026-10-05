@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  addTicketComment,
-  getTicketComments,
-} from "../../api/ticketApi";
+import { addTicketComment, getTicketComments } from "../../api/ticketApi";
 
 function formatLabel(value = "") {
   return value
@@ -30,16 +27,13 @@ function TicketComments({ ticket, onClose }) {
         const response = await getTicketComments(ticket.ticketid);
 
         if (!response.success) {
-          throw new Error(
-            response.message || "Unable to load comments."
-          );
+          throw new Error(response.message || "Unable to load comments.");
         }
 
         setTicketComments(response.data || []);
       } catch (requestError) {
         setCommentsError(
-          requestError.response?.data?.message ||
-            requestError.message
+          requestError.response?.data?.message || requestError.message,
         );
       } finally {
         setCommentsLoading(false);
@@ -60,15 +54,10 @@ function TicketComments({ ticket, onClose }) {
     setCommentsError("");
 
     try {
-      const response = await addTicketComment(
-        ticket.ticketid,
-        comment
-      );
+      const response = await addTicketComment(ticket.ticketid, comment);
 
       if (!response.success) {
-        throw new Error(
-          response.message || "Unable to add comment."
-        );
+        throw new Error(response.message || "Unable to add comment.");
       }
 
       setTicketComments((currentComments) => [
@@ -79,8 +68,7 @@ function TicketComments({ ticket, onClose }) {
       setCommentDraft("");
     } catch (requestError) {
       setCommentsError(
-        requestError.response?.data?.message ||
-          requestError.message
+        requestError.response?.data?.message || requestError.message,
       );
     } finally {
       setCommentsSaving(false);
@@ -106,13 +94,9 @@ function TicketComments({ ticket, onClose }) {
       >
         <header className="staff-comments-header">
           <div>
-            <span className="staff-detail-ticket-id">
-              TICKET
-            </span>
+            <span className="staff-detail-ticket-id">TICKET</span>
 
-            <h2 id="staff-comments-title">
-              Comments
-            </h2>
+            <h2 id="staff-comments-title">Comments</h2>
 
             <p>{ticket.subject}</p>
           </div>
@@ -127,20 +111,11 @@ function TicketComments({ ticket, onClose }) {
           </button>
         </header>
 
-        <div
-          className="staff-comments-list"
-          aria-live="polite"
-        >
+        <div className="staff-comments-list" aria-live="polite">
           {commentsLoading ? (
-            <p className="staff-comments-state">
-              Loading comments...
-            </p>
-          ) : commentsError &&
-            ticketComments.length === 0 ? (
-            <p
-              className="staff-ticket-error"
-              role="alert"
-            >
+            <p className="staff-comments-state">Loading comments...</p>
+          ) : commentsError && ticketComments.length === 0 ? (
+            <p className="staff-ticket-error" role="alert">
               {commentsError}
             </p>
           ) : ticketComments.length === 0 ? (
@@ -149,32 +124,20 @@ function TicketComments({ ticket, onClose }) {
             </p>
           ) : (
             ticketComments.map((comment) => (
-              <article
-                className="staff-comment"
-                key={comment.commentid}
-              >
+              <article className="staff-comment" key={comment.commentid}>
                 <header>
                   <div>
-                    <strong>
-                      {comment.authorName || "User"}
-                    </strong>
+                    <strong>{comment.authorName || "User"}</strong>
 
-                    <span>
-                      {formatLabel(comment.authorRole)}
-                    </span>
+                    <span>{formatLabel(comment.authorRole)}</span>
                   </div>
 
                   <time dateTime={comment.commenton}>
                     {comment.commenton
-                      ? new Intl.DateTimeFormat(
-                          undefined,
-                          {
-                            dateStyle: "medium",
-                            timeStyle: "short",
-                          }
-                        ).format(
-                          new Date(comment.commenton)
-                        )
+                      ? new Intl.DateTimeFormat(undefined, {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        }).format(new Date(comment.commenton))
                       : "Just now"}
                   </time>
                 </header>
@@ -186,28 +149,18 @@ function TicketComments({ ticket, onClose }) {
         </div>
 
         {commentsError && ticketComments.length > 0 && (
-          <p
-            className="staff-ticket-error staff-comments-error"
-            role="alert"
-          >
+          <p className="staff-ticket-error staff-comments-error" role="alert">
             {commentsError}
           </p>
         )}
 
-        <form
-          className="staff-comment-form"
-          onSubmit={handleAddComment}
-        >
-          <label htmlFor="staff-new-comment">
-            Add a comment
-          </label>
+        <form className="staff-comment-form" onSubmit={handleAddComment}>
+          <label htmlFor="staff-new-comment">Add a comment</label>
 
           <textarea
             id="staff-new-comment"
             value={commentDraft}
-            onChange={(event) =>
-              setCommentDraft(event.target.value)
-            }
+            onChange={(event) => setCommentDraft(event.target.value)}
             placeholder="Write an update for this ticket..."
             maxLength={5000}
             rows={4}
@@ -215,20 +168,13 @@ function TicketComments({ ticket, onClose }) {
           />
 
           <div className="staff-comment-form-footer">
-            <span>
-              {commentDraft.length}/5000
-            </span>
+            <span>{commentDraft.length}/5000</span>
 
             <button
               type="submit"
-              disabled={
-                commentsSaving ||
-                !commentDraft.trim()
-              }
+              disabled={commentsSaving || !commentDraft.trim()}
             >
-              {commentsSaving
-                ? "Adding..."
-                : "Add comment"}
+              {commentsSaving ? "Adding..." : "Add comment"}
             </button>
           </div>
         </form>

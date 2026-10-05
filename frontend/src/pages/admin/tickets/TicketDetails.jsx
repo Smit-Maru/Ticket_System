@@ -79,65 +79,86 @@ function TicketDetails() {
           <h1>Ticket details</h1>
           <p>Review and update the selected support ticket.</p>
         </div>
-        <Link className="add-user-cancel" to="/admin/tickets">Back to tickets</Link>
+        <Link className="add-user-cancel" to="/admin/tickets">
+          Back to tickets
+        </Link>
       </div>
 
       {loading ? (
         <p>Loading ticket...</p>
-      ) : ticket && (
-        <form className="add-user-form" onSubmit={handleSubmit}>
-          <div className="add-user-form-grid">
-            <label>
-              Subject
-              <input name="subject" value={form.subject} onChange={handleChange} required />
-            </label>
-            <label>
-              Assigned staff ID
-              <input
-                name="assignedto"
-                type="number"
-                min="1"
-                value={form.assignedto}
-                onChange={handleChange}
-              />
-            </label>
-            <label>
-              Status
-              <select name="status" value={form.status} onChange={handleChange}>
-                <option value="open">Open</option>
-                <option value="in_progress">In progress</option>
-                <option value="waiting_for_user">Waiting for user</option>
-                <option value="resolved">Resolved</option>
-                <option value="closed">Closed</option>
-              </select>
-            </label>
-            <label>
-              Priority
-              <select name="priority" value={form.priority} onChange={handleChange}>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
-            </label>
-            <label>
-              Description
-              <textarea
-                name="description"
-                value={form.description}
-                onChange={handleChange}
-                required
-              />
-            </label>
-          </div>
+      ) : (
+        ticket && (
+          <form className="add-user-form" onSubmit={handleSubmit}>
+            <div className="add-user-form-grid">
+              <label>
+                Subject
+                <input
+                  name="subject"
+                  value={form.subject}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+              <label>
+                Assigned staff ID
+                <input
+                  name="assignedto"
+                  type="number"
+                  min="1"
+                  value={form.assignedto}
+                  onChange={handleChange}
+                />
+              </label>
+              <label>
+                Status
+                <select
+                  name="status"
+                  value={form.status}
+                  onChange={handleChange}
+                >
+                  <option value="open">Open</option>
+                  <option value="in_progress">In progress</option>
+                  <option value="waiting_for_user">Waiting for user</option>
+                  <option value="resolved">Resolved</option>
+                  <option value="closed">Closed</option>
+                </select>
+              </label>
+              <label>
+                Priority
+                <select
+                  name="priority"
+                  value={form.priority}
+                  onChange={handleChange}
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </label>
+              <label>
+                Description
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+            </div>
 
-          {error && <p className="add-user-error" role="alert">{error}</p>}
+            {error && (
+              <p className="add-user-error" role="alert">
+                {error}
+              </p>
+            )}
 
-          <div className="add-user-actions">
-            <button type="submit" disabled={saving}>
-              {saving ? "Saving..." : "Save changes"}
-            </button>
-          </div>
-        </form>
+            <div className="add-user-actions">
+              <button type="submit" disabled={saving}>
+                {saving ? "Saving..." : "Save changes"}
+              </button>
+            </div>
+          </form>
+        )
       )}
     </section>
   );

@@ -20,7 +20,9 @@ function Staff() {
           setError(response.message || "Unable to load staff.");
         }
       } catch (requestError) {
-        setError(requestError.response?.data?.message || "Unable to load staff.");
+        setError(
+          requestError.response?.data?.message || "Unable to load staff.",
+        );
       } finally {
         setLoading(false);
       }
@@ -99,23 +101,30 @@ function Staff() {
               </tr>
             )}
 
-            {!loading && !error && staff.map((staffMember) => (
-
-              <tr key={staffMember.userid}>
-                <td>{staffMember.userid}</td>
-                <td>{staffMember.name}</td>
-                <td>{staffMember.email}</td>
-                <td>{staffMember.role}</td>
-                <td>
-                  <button className="edit-btn" onClick={() => handleEdit(staffMember.userid)}>
-                    Edit
-                  </button>
-                  <button className="delete-btn" onClick={() => handleDelete(staffMember.userid)}>
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {!loading &&
+              !error &&
+              staff.map((staffMember) => (
+                <tr key={staffMember.userid}>
+                  <td>{staffMember.userid}</td>
+                  <td>{staffMember.name}</td>
+                  <td>{staffMember.email}</td>
+                  <td>{staffMember.role}</td>
+                  <td>
+                    <button
+                      className="edit-btn"
+                      onClick={() => handleEdit(staffMember.userid)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDelete(staffMember.userid)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

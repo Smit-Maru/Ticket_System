@@ -31,7 +31,9 @@ export const getTicketComments = async (ticketId) => {
 };
 
 export const addTicketComment = async (ticketId, comment) => {
-  const response = await apiClient.post(`/comment/ticket/${ticketId}`, { comment });
+  const response = await apiClient.post(`/comment/ticket/${ticketId}`, {
+    comment,
+  });
 
   return response.data;
 };

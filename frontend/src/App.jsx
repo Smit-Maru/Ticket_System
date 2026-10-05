@@ -17,6 +17,9 @@ import StaffDashboard from "./pages/staff/Dashboard";
 import StaffTickets from "./pages/staff/Tickets";
 import StaffProfile from "./pages/staff/Profile";
 import StaffTicketDetails from "./pages/staff/StaffTicketDetails";
+import UserLayout from "./layouts/UserLayout";
+import UserTickets from "./pages/user/Tickets";
+import UserAddTicket from "./pages/user/AddTicket";
 
 function App() {
   return (
@@ -24,7 +27,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        
+
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="dashboard" element={<AdminDashboard />} />
@@ -46,8 +49,13 @@ function App() {
           <Route path="profile" element={<StaffProfile />} />
         </Route>
 
-        <Route path="/user/dashboard" element={<UserDashboard />} />
-        
+        <Route path="/user" element={<UserLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<UserDashboard />} />
+          <Route path="tickets" element={<UserTickets />} />
+          <Route path="tickets/add" element={<UserAddTicket />} />
+        </Route>
+
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>

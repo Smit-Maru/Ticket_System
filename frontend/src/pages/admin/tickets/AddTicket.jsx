@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   createTicket,
   getTicketById,
-  updateTicket
+  updateTicket,
 } from "../../../api/ticketApi";
 import "./AddTicket.css";
 import { staffDropdown } from "../../../api/staffApi";
@@ -15,7 +15,6 @@ function AddTicket() {
   const ticketId = searchParams.get("id");
   const isEditMode = Boolean(ticketId);
 
-  
   const [form, setForm] = useState({
     subject: "",
     description: "",
@@ -36,8 +35,7 @@ function AddTicket() {
       try {
         // Get staff list
         const staffResponse = await staffDropdown();
-        console.log("Staffs : ",staffResponse);
-        
+        console.log("Staffs : ", staffResponse);
 
         if (!staffResponse.success) {
           throw new Error(staffResponse.message || "Unable to get staff.");
@@ -56,12 +54,12 @@ function AddTicket() {
           const ticket = ticketResponse.data;
 
           setForm({
-            subject: ticket.subject || "",
-            description: ticket.description || "",
-            customerid: ticket.customerid || "",
-            assignedto: ticket.assignedto || "",
-            priority: ticket.priority?.toLowerCase() || "low",
-            status: ticket.status || "open",
+            subject: ticket.tickets.subject || "",
+            description: ticket.tickets.description || "",
+            customerid: ticket.tickets.customerid || "",
+            assignedto: ticket.tickets.assignedto || "",
+            priority: ticket.tickets.priority?.toLowerCase() || "low",
+            status: ticket.tickets.status || "open",
           });
         }
       } catch (requestError) {
@@ -149,19 +147,6 @@ function AddTicket() {
               />
             </label>
 
-            {/* <label>
-              Customer ID
-              <input hidden
-                name="customerid"
-                type="number"
-                min="1"
-                value={form.customerid}
-                onChange={handleChange}
-                required
-                disabled={isEditMode}
-              />
-            </label> */}
-
             <label>
               Assigned staff
               <select
@@ -169,7 +154,9 @@ function AddTicket() {
                 value={form.assignedto}
                 onChange={handleChange}
               >
-                <option key={`${null}`} value="">Unassigned</option>
+                <option key={`${null}`} value="">
+                  Unassigned
+                </option>
 
                 {staff.map((member) => (
                   <option key={member.userid} value={member.userid}>

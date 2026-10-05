@@ -9,29 +9,18 @@ function AdminSidebar() {
       </div>
 
       <div className="sidebar-menu">
+        <Link to="/admin/dashboard">Dashboard</Link>
 
-        <Link to="/admin/dashboard">
-          Dashboard
-        </Link>
+        <Link to="/admin/users">Users</Link>
 
-        <Link to="/admin/users">
-          Users
-        </Link>
+        <Link to="/admin/staff">Staff</Link>
 
-        <Link to="/admin/staff">
-          Staff
-        </Link>
-
-        <Link to="/admin/tickets">
-          Tickets
-        </Link>
+        <Link to="/admin/tickets">Tickets</Link>
 
         {/* <Link to="/admin/settings">
           Settings
         </Link> */}
-
       </div>
-
     </aside>
   );
 }

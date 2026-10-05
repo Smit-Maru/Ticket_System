@@ -67,19 +67,27 @@ export const addTicketComment = async (req, res) => {
     const ticketId = await getAccessibleTicket(req, res);
     if (!ticketId) return;
 
-    const comment = typeof req.body.comment === "string" ? req.body.comment.trim() : "";
+    const comment =
+      typeof req.body.comment === "string" ? req.body.comment.trim() : "";
     const userId = Number(req.user.userId);
 
     if (!comment) {
-      return res.status(400).json({ success: false, message: "Comment cannot be empty." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Comment cannot be empty." });
     }
 
     if (comment.length > 5000) {
-      return res.status(400).json({ success: false, message: "Comment must be 5000 characters or fewer." });
+      return res.status(400).json({
+        success: false,
+        message: "Comment must be 5000 characters or fewer.",
+      });
     }
 
     if (!Number.isSafeInteger(userId)) {
-      return res.status(401).json({ success: false, message: "Invalid user session." });
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid user session." });
     }
 
     const [insertedComment] = await db

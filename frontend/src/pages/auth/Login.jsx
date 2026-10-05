@@ -15,36 +15,30 @@ function Login() {
     try {
       const loginData = {
         email: email,
-        password: password
+        password: password,
       };
 
       const response = await loginUser(loginData);
 
       if (response.success) {
-
         const role = response.user.role.toLowerCase().trim();
 
         if (role === "admin" || role === "administrator") {
           navigate("/admin/dashboard");
-        }
-        else if (role === "staff" || role === "support staff") {
+        } else if (role === "staff" || role === "support staff") {
           navigate("/staff/dashboard");
-        }
-        else if (role === "user") {
+        } else if (role === "user") {
           navigate("/user/dashboard");
         }
-      } 
-      else {
+      } else {
         alert(response.message);
       }
-
     } catch (error) {
       console.error("Login Error:", error);
 
       if (error.response) {
         alert(error.response.data.message);
-      } 
-      else {
+      } else {
         alert("Something went wrong");
       }
     }
@@ -53,23 +47,14 @@ function Login() {
   return (
     <main className="login-page">
       <section className="login-card">
-
         <div className="login-logo">S</div>
 
         <h1>Welcome back</h1>
 
-        <p>
-          Sign in to your Supportly account.
-        </p>
+        <p>Sign in to your Supportly account.</p>
 
-        <form
-          className="login-form"
-          onSubmit={handleLogin}
-        >
-
-          <label htmlFor="email">
-            Email
-          </label>
+        <form className="login-form" onSubmit={handleLogin}>
+          <label htmlFor="email">Email</label>
 
           <input
             id="email"
@@ -79,9 +64,7 @@ function Login() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          <label htmlFor="password">
-            Password
-          </label>
+          <label htmlFor="password">Password</label>
 
           <input
             id="password"
@@ -91,20 +74,14 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button type="submit">
-            Sign in
-          </button>
-
+          <button type="submit">Sign in</button>
         </form>
 
         <p className="auth-link">
           Don&apos;t have an account? <Link to="/signup">Create one</Link>
         </p>
 
-        <small>
-          Supportly
-        </small>
-
+        <small>Supportly</small>
       </section>
     </main>
   );

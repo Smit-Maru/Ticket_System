@@ -1,72 +1,104 @@
+/* =========================================================
+   TICKET STATUS & PRIORITY BADGES
+   ========================================================= */
+
 .ticket-status-badge,
 .ticket-priority-badge {
   display: inline-flex;
-  min-height: 25px;
   align-items: center;
-  gap: 6px;
-  padding: 0 9px;
-  border-radius: 5px;
-  background: #edf0f4;
-  color: #59677a;
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 1.2;
+  justify-content: center;
+
+  min-height: 30px;
+  padding: 0 12px;
+
+  border-radius: 6px;
+
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+
   white-space: nowrap;
+  box-sizing: border-box;
 }
 
+/* =========================================================
+   TICKET STATUS
+   ========================================================= */
+
+/* Open */
 .ticket-status-badge--open {
   background: #eaf2ff;
   color: #3162b7;
 }
 
+/* In Progress */
 .ticket-status-badge--in_progress {
   background: #fff4df;
   color: #9a6500;
 }
 
+/* Waiting for User */
 .ticket-status-badge--waiting_for_user {
   background: #f1edff;
   color: #6952a7;
 }
 
+/* Resolved */
 .ticket-status-badge--resolved {
   background: #e7f7ef;
   color: #24784d;
 }
 
+/* Closed */
 .ticket-status-badge--closed {
   background: #edf0f4;
   color: #59677a;
 }
 
+/* =========================================================
+   TICKET PRIORITY
+   ========================================================= */
+
+/* Low */
 .ticket-priority-badge--low {
   background: #edf7f1;
   color: #35734f;
 }
 
+/* Medium */
 .ticket-priority-badge--medium {
   background: #fff4df;
   color: #9a6500;
 }
 
+/* High */
 .ticket-priority-badge--high {
   background: #fff0ed;
   color: #b84d38;
 }
 
+/* Unknown */
 .ticket-status-badge--unknown,
 .ticket-priority-badge--unknown {
   background: #edf0f4;
   color: #59677a;
 }
 
+/* =========================================================
+   TICKET POPUP OVERLAY
+   ========================================================= */
+
 .ticket-popup-overlay {
   position: fixed;
+
   top: 0;
   left: 0;
+
   width: 100%;
   height: 100%;
+
   background: rgba(0, 0, 0, 0.45);
+
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 
@@ -77,18 +109,27 @@
   z-index: 9999;
 }
 
+/* =========================================================
+   TICKET POPUP
+   ========================================================= */
+
 .ticket-popup {
   width: 600px;
   max-width: 90%;
   max-height: 85vh;
 
   background: #ffffff;
+
   border-radius: 12px;
 
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
 
   overflow-y: auto;
 }
+
+/* =========================================================
+   POPUP HEADER
+   ========================================================= */
 
 .ticket-popup-header {
   display: flex;
@@ -104,11 +145,14 @@
   margin: 0;
 }
 
+/* Close Button */
+
 .ticket-popup-close {
   border: none;
   background: transparent;
 
   font-size: 28px;
+
   cursor: pointer;
 
   color: #555;
@@ -118,15 +162,23 @@
   color: #000;
 }
 
+/* =========================================================
+   POPUP BODY
+   ========================================================= */
+
 .ticket-popup-body {
   padding: 24px;
 }
+
+/* =========================================================
+   TICKET DETAILS
+   ========================================================= */
 
 .ticket-detail {
   margin-bottom: 18px;
 }
 
-.ticket-detail span {
+.ticket-detail > span {
   display: block;
 
   font-size: 13px;
@@ -141,10 +193,29 @@
   margin: 0;
 
   font-size: 15px;
+
   color: #111827;
 
   word-break: break-word;
 }
+
+/*
+   Prevent the badge from being affected
+   by paragraph styling.
+*/
+
+.ticket-detail p .ticket-status-badge,
+.ticket-detail p .ticket-priority-badge {
+  display: inline-flex;
+
+  width: fit-content;
+
+  margin: 0;
+}
+
+/* =========================================================
+   POPUP FOOTER
+   ========================================================= */
 
 .ticket-popup-footer {
   display: flex;
@@ -162,6 +233,7 @@
   border-radius: 6px;
 
   background: #374151;
+
   color: white;
 
   cursor: pointer;
@@ -171,22 +243,37 @@
   background: #111827;
 }
 
+/* =========================================================
+   ACTION BUTTONS
+   ========================================================= */
+
 .view-btn,
 .edit-btn,
 .comment-btn,
 .delete-btn {
   height: 32px;
+
   padding: 0 10px;
+
   border: none;
   border-radius: 5px;
+
   font-size: 13px;
   font-weight: 500;
+
   cursor: pointer;
+
   margin-right: 5px;
-  transition: background-color 0.2s ease, color 0.2s ease;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
-/* View */
+/* =========================================================
+   VIEW BUTTON
+   ========================================================= */
+
 .view-btn {
   background-color: #e8f0fe;
   color: #2563eb;
@@ -196,7 +283,10 @@
   background-color: #dbe7fd;
 }
 
-/* Edit */
+/* =========================================================
+   EDIT BUTTON
+   ========================================================= */
+
 .edit-btn {
   background-color: #f0fdf4;
   color: #16a34a;
@@ -206,7 +296,10 @@
   background-color: #dcfce7;
 }
 
-/* Add Comment */
+/* =========================================================
+   ADD COMMENT BUTTON
+   ========================================================= */
+
 .comment-btn {
   background-color: #fef3c7;
   color: #d97706;
@@ -216,7 +309,10 @@
   background-color: #fde68a;
 }
 
-/* Delete */
+/* =========================================================
+   DELETE BUTTON
+   ========================================================= */
+
 .delete-btn {
   background-color: #fef2f2;
   color: #dc2626;
@@ -226,9 +322,14 @@
   background-color: #fee2e2;
 }
 
-/* Disabled Add Comment */
+/* =========================================================
+   DISABLED ADD COMMENT
+   ========================================================= */
+
 .comment-btn:disabled {
   background-color: #f3f4f6;
+
   color: #9ca3af;
+
   cursor: not-allowed;
 }

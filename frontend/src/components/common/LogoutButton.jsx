@@ -17,7 +17,8 @@ function LogoutButton({ className, children = "Logout" }) {
       navigate("/login", { replace: true });
     } catch (requestError) {
       setError(
-        requestError.response?.data?.message || "Unable to log out. Please try again.",
+        requestError.response?.data?.message ||
+          "Unable to log out. Please try again.",
       );
     } finally {
       setIsLoggingOut(false);
@@ -28,14 +29,18 @@ function LogoutButton({ className, children = "Logout" }) {
     <>
       <button
         className={className}
-        type="butto n"
+        type="button"
         onClick={handleLogout}
         disabled={isLoggingOut}
         aria-busy={isLoggingOut}
       >
         {isLoggingOut ? "Logging out..." : children}
       </button>
-      {error && <span className="logout-error" role="alert">{error}</span>}
+      {error && (
+        <span className="logout-error" role="alert">
+          {error}
+        </span>
+      )}
     </>
   );
 }

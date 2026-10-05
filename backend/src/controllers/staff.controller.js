@@ -90,12 +90,7 @@ export const updateStaff = async (req, res) => {
         passwordhash: users.passwordhash,
       })
       .from(users)
-      .where(
-        and(
-          eq(users.userid, Number(id)),
-          eq(users.role, "staff")
-        )
-      );
+      .where(and(eq(users.userid, Number(id)), eq(users.role, "staff")));
 
     if (userOldPassword.length === 0) {
       return res.status(404).json({
@@ -121,12 +116,7 @@ export const updateStaff = async (req, res) => {
     const result = await db
       .update(users)
       .set(staffData)
-      .where(
-        and(
-          eq(users.userid, Number(id)),
-          eq(users.role, "staff")
-        )
-      )
+      .where(and(eq(users.userid, Number(id)), eq(users.role, "staff")))
       .returning();
 
     res.status(200).json({
@@ -134,7 +124,6 @@ export const updateStaff = async (req, res) => {
       message: "Staff updated successfully",
       data: result[0],
     });
-
   } catch (error) {
     console.error("Update Staff Error:", error);
 
@@ -174,22 +163,22 @@ export const deleteStaff = async (req, res) => {
 };
 
 export const staffDropdown = async (req, res) => {
-  try{
+  try {
     const result = await db
       .select({ userid: users.userid, name: users.name })
       .from(users)
       .where(eq(users.role, "staff"));
 
-      res.status(200).json({
-        success:true,
-        message: "Staff dropdown fetched successfully",
-        data:result
-      })
+    res.status(200).json({
+      success: true,
+      message: "Staff dropdown fetched successfully",
+      data: result,
+    });
   } catch (error) {
     console.error("Staff Dropdown Error:", error);
     res.status(500).json({
       success: false,
-      message: error.message
-    })
+      message: error.message,
+    });
   }
-}
+};

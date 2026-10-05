@@ -1,17 +1,17 @@
-.staff-layout {
+.user-layout {
   min-height: 100vh;
   display: flex;
   background: #f5f7fb;
   color: #243047;
 }
-.staff-sidebar {
+.user-sidebar {
   width: 220px;
   flex: none;
   padding: 26px 14px;
   border-right: 1px solid #e5eaf1;
   background: #fff;
 }
-.staff-logo {
+.user-logo {
   display: flex;
   align-items: center;
   gap: 9px;
@@ -20,7 +20,7 @@
   font-size: 19px;
   font-weight: 800;
 }
-.staff-logo span {
+.user-logo span {
   display: grid;
   width: 30px;
   height: 30px;
@@ -29,11 +29,11 @@
   background: #2563eb;
   color: #fff;
 }
-.staff-nav {
+.user-nav {
   display: grid;
   gap: 5px;
 }
-.staff-nav a {
+.user-nav a {
   padding: 11px 12px;
   border-radius: 7px;
   color: #718096;
@@ -41,88 +41,88 @@
   font-weight: 600;
   text-decoration: none;
 }
-.staff-nav a:hover,
-.staff-nav a.active {
+.user-nav a:hover,
+.user-nav a.active {
   background: #edf4ff;
   color: #2563eb;
 }
-.staff-content {
+.user-content {
   width: 100%;
   max-width: 1200px;
   padding: 32px;
   margin: 0 auto;
 }
-.staff-content h1 {
+.user-content h1 {
   margin: 0 0 8px;
   color: #1d2b42;
   font-size: 27px;
 }
-.staff-content > section > p {
+.user-content > section > p {
   margin: 0 0 25px;
   color: #8996a8;
   font-size: 12px;
 }
-.staff-cards {
+.user-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
-.staff-card {
+.user-card {
   padding: 20px;
   border: 1px solid #e5eaf1;
   border-radius: 10px;
   background: #fff;
 }
-.staff-card span {
+.user-card span {
   display: block;
   margin-bottom: 10px;
   color: #8996a8;
   font-size: 11px;
 }
-.staff-card strong {
+.user-card strong {
   color: #1d2b42;
   font-size: 25px;
 }
-.staff-panel {
+.user-panel {
   margin-top: 24px;
   padding: 22px;
   border: 1px solid #e5eaf1;
   border-radius: 10px;
   background: #fff;
 }
-.staff-panel h2 {
+.user-panel h2 {
   margin: 0 0 8px;
   color: #1d2b42;
   font-size: 16px;
 }
-.staff-panel p {
+.user-panel p {
   margin: 0;
   color: #8996a8;
   font-size: 12px;
 }
 @media (max-width: 600px) {
-  .staff-layout {
+  .user-layout {
     display: block;
   }
-  .staff-sidebar {
+  .user-sidebar {
     width: 100%;
     padding: 18px;
   }
-  .staff-logo {
+  .user-logo {
     margin-bottom: 15px;
   }
-  .staff-nav {
+  .user-nav {
     display: flex;
     gap: 4px;
     overflow: auto;
   }
-  .staff-nav a {
+  .user-nav a {
     white-space: nowrap;
   }
-  .staff-content {
+  .user-content {
     padding: 22px 18px;
   }
-  .staff-cards {
+  .user-cards {
     grid-template-columns: 1fr;
   }
 }

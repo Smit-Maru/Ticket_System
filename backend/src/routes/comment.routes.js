@@ -1,5 +1,8 @@
 import express from "express";
-import { addTicketComment, getTicketComments } from "../controllers/comment.controller.js";
+import {
+  addTicketComment,
+  getTicketComments,
+} from "../controllers/comment.controller.js";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { authorize } from "../middleware/role.middleware.js";
 

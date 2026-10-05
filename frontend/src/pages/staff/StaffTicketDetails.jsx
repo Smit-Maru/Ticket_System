@@ -4,7 +4,9 @@ import { getTicketById } from "../../api/ticketApi";
 import "./StaffTickets.css";
 
 function formatLabel(value = "") {
-  return value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+  return value
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function formatDate(value) {
@@ -13,7 +15,10 @@ function formatDate(value) {
   const date = new Date(value);
   return Number.isNaN(date.getTime())
     ? "Not available"
-    : new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(date);
+    : new Intl.DateTimeFormat(undefined, {
+        dateStyle: "medium",
+        timeStyle: "short",
+      }).format(date);
 }
 
 function StaffTicketDetails() {
@@ -45,7 +50,9 @@ function StaffTicketDetails() {
   return (
     <section className="staff-tickets-page">
       <div className="staff-detail-heading">
-        <Link className="staff-back-link" to="/staff/tickets">&lt; Back to assigned tickets</Link>
+        <Link className="staff-back-link" to="/staff/tickets">
+          &lt; Back to assigned tickets
+        </Link>
         <span className="staff-detail-ticket-id">TICKET</span>
         <h1>Ticket details</h1>
       </div>
@@ -53,7 +60,9 @@ function StaffTicketDetails() {
       {loading ? (
         <p className="staff-ticket-message">Loading ticket...</p>
       ) : error ? (
-        <p className="staff-ticket-error" role="alert">{error}</p>
+        <p className="staff-ticket-error" role="alert">
+          {error}
+        </p>
       ) : ticket ? (
         <article className="staff-detail-card">
           <h2>{ticket.subject}</h2>
@@ -63,30 +72,34 @@ function StaffTicketDetails() {
             <div>
               <dt>Status</dt>
               <dd>
-                <span className={`staff-status-badge staff-status-badge--${ticket.status}`}>
-                  {formatLabel(ticket.status)}
+                <span
+                  className={`staff-status-badge staff-status-badge--${ticket.tickets.status}`}
+                >
+                  {formatLabel(ticket.tickets.status)}
                 </span>
               </dd>
             </div>
             <div>
               <dt>Priority</dt>
               <dd>
-                <span className={`staff-priority-badge staff-priority-badge--${ticket.priority?.toLowerCase()}`}>
-                  {formatLabel(ticket.priority)}
+                <span
+                  className={`staff-priority-badge staff-priority-badge--${ticket.tickets.priority?.toLowerCase()}`}
+                >
+                  {formatLabel(ticket.tickets.priority)}
                 </span>
               </dd>
             </div>
             <div>
-              <dt>Customer ID</dt>
-              <dd>{ticket.customerid ?? "Not available"}</dd>
+              <dt>Customer</dt>
+              <dd>{ticket.customer.name ?? "Not available"}</dd>
             </div>
             <div>
               <dt>Created</dt>
-              <dd>{formatDate(ticket.createdat)}</dd>
+              <dd>{formatDate(ticket.tickets.createdat)}</dd>
             </div>
             <div>
               <dt>Assigned</dt>
-              <dd>{formatDate(ticket.assignedat)}</dd>
+              <dd>{formatDate(ticket.tickets.assignedat)}</dd>
             </div>
           </dl>
         </article>

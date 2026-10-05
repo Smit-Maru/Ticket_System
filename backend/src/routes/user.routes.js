@@ -1,5 +1,11 @@
 import express from "express";
-import { addUser, deleteUser, getUsers, getUsersById, updateUser } from "../controllers/user.controller.js";
+import {
+  addUser,
+  deleteUser,
+  getUsers,
+  getUsersById,
+  updateUser,
+} from "../controllers/user.controller.js";
 
 import { authenticate } from "../middleware/auth.middleware.js";
 import { authorize } from "../middleware/role.middleware.js";
@@ -11,12 +17,12 @@ router.use(authorize("admin"));
 
 router.get("/", getUsers);
 
-router.get("/:id", getUsersById)
+router.get("/:id", getUsersById);
 
-router.post("/", addUser)
+router.post("/", addUser);
 
-router.put("/:id", updateUser)
+router.put("/:id", updateUser);
 
-router.delete("/:id", deleteUser)
+router.delete("/:id", deleteUser);
 
 export default router;

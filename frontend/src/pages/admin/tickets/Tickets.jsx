@@ -223,26 +223,26 @@ function Tickets() {
             <div className="ticket-popup-body">
               <div className="ticket-detail">
                 <span>Ticket ID</span>
-                <p>{selectedTicket.ticketid}</p>
+                <p>{selectedTicket.tickets.ticketid}</p>
               </div>
 
               <div className="ticket-detail">
                 <span>Subject</span>
-                <p>{selectedTicket.subject}</p>
+                <p>{selectedTicket.tickets.subject}</p>
               </div>
 
               <div className="ticket-detail">
                 <span>Description</span>
-                <p>{selectedTicket.description}</p>
+                <p>{selectedTicket.tickets.description}</p>
               </div>
 
               <div className="ticket-detail">
                 <span>Status</span>
                 <p>
                   <span
-                    className={`ticket-status-badge ticket-status-badge--${selectedTicket.status || "unknown"}`}
+                    className={`ticket-status-badge ticket-status-badge--${selectedTicket.tickets.status || "unknown"}`}
                   >
-                    {formatTicketLabel(selectedTicket.status)}
+                    {formatTicketLabel(selectedTicket.tickets.status)}
                   </span>
                 </p>
               </div>
@@ -251,31 +251,31 @@ function Tickets() {
                 <span>Priority</span>
                 <p>
                   <span
-                    className={`ticket-priority-badge ticket-priority-badge--${selectedTicket.priority?.toLowerCase() || "unknown"}`}
+                    className={`ticket-priority-badge ticket-priority-badge--${selectedTicket.tickets.priority?.toLowerCase() || "unknown"}`}
                   >
-                    {formatTicketLabel(selectedTicket.priority)}
+                    {formatTicketLabel(selectedTicket.tickets.priority)}
                   </span>
                 </p>
               </div>
 
               <div className="ticket-detail">
-                <span>Customer ID</span>
-                <p>{selectedTicket.customerid}</p>
+                <span>Customer</span>
+                <p>{selectedTicket.customer?.name || "Unknown"}</p>
               </div>
 
               <div className="ticket-detail">
                 <span>Assigned Staff</span>
-                <p>{selectedTicket.assignedto || "Unassigned"}</p>
+                <p>{selectedTicket.staff?.name || "Unassigned"}</p>
               </div>
 
               <div className="ticket-detail">
                 <span>Created At</span>
-                <p>{selectedTicket.createdat}</p>
+                <p>{selectedTicket.tickets.createdat}</p>
               </div>
 
               <div className="ticket-detail">
                 <span>Assigned At</span>
-                <p>{selectedTicket.assignedat || "Not assigned"}</p>
+                <p>{selectedTicket.tickets.assignedat || "Not assigned"}</p>
               </div>
             </div>
 

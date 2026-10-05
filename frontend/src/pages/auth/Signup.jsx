@@ -13,11 +13,11 @@ function Signup() {
   const handleSignUp = async (e) => {
     e.preventDefault();
 
-    try { 
+    try {
       const signUpData = {
-        name : name,
-        email : email,
-        password : password
+        name: name,
+        email: email,
+        password: password,
       };
 
       const response = await signUpUser(signUpData);
@@ -28,25 +28,20 @@ function Signup() {
         // Redirect based on user role
         if (response.user.role === "admin") {
           navigate("/admin/dashboard");
-        } 
-        else if (response.user.role === "staff") {
+        } else if (response.user.role === "staff") {
           navigate("/staff/dashboard");
-        } 
-        else if (response.user.role === "user") {
+        } else if (response.user.role === "user") {
           navigate("/user/dashboard");
         }
-      } 
-      else {
+      } else {
         alert(response.message);
       }
-
     } catch (error) {
       console.error("Login Error:", error);
 
       if (error.response) {
         alert(error.response.data.message);
-      } 
-      else {
+      } else {
         alert("Something went wrong");
       }
     }
@@ -63,25 +58,25 @@ function Signup() {
 
         <form className="login-form" onSubmit={handleSignUp}>
           <label htmlFor="name">Name</label>
-          <input 
-            id="name" 
-            type="text" 
+          <input
+            id="name"
+            type="text"
             placeholder="Your name"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
 
           <label htmlFor="email">Email</label>
-          <input 
-            id="email" 
-            type="email" 
+          <input
+            id="email"
+            type="email"
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
 
           <label htmlFor="password">Password</label>
-          <input 
+          <input
             id="password"
             type="password"
             placeholder="Create a password"

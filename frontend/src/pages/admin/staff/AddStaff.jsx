@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import {
-  createStaff,
-  getStaffById,
-  updateStaff,
-} from "../../../api/staffApi";
+import { createStaff, getStaffById, updateStaff } from "../../../api/staffApi";
 import "./AddStaff.css";
 
 function AddStaff() {
@@ -75,7 +71,9 @@ function AddStaff() {
       if (!response.success) {
         throw new Error(
           response.message ||
-            (isEditMode ? "Unable to update staff." : "Unable to create staff."),
+            (isEditMode
+              ? "Unable to update staff."
+              : "Unable to create staff."),
         );
       }
 
