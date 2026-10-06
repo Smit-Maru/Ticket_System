@@ -66,6 +66,20 @@ export const createStaff = async (req, res) => {
       .values({ name, email, passwordhash, role: "staff" })
       .returning();
 
+    const user = result[0];
+
+    let roleid = null;
+
+    roleid = `STF_${user.userid}`;
+
+    const updatedUser = await db
+      .update(users)
+      .set({
+        roleid,
+      })
+      .where(eq(users.userid, user.userid))
+      .returning();
+
     res.status(201).json({
       success: true,
       message: "Staff created successfully",

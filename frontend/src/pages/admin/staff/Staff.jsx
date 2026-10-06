@@ -105,7 +105,7 @@ function Staff() {
               !error &&
               staff.map((staffMember) => (
                 <tr key={staffMember.userid}>
-                  <td>{staffMember.userid}</td>
+                  <td>{staffMember.roleid}</td>
                   <td>{staffMember.name}</td>
                   <td>{staffMember.email}</td>
                   <td>{staffMember.role}</td>

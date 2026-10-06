@@ -24,12 +24,15 @@ function Tickets() {
 
   const [commentsTicket, setCommentsTicket] = useState(null);
 
+  const [search, setSearch] = useState("");
+
   const navigate = useNavigate();
 
   useEffect(() => {
     async function loadTickets() {
       try {
-        const response = await getTickets();
+        const response = await getTickets(search);
+        console.log(response)
         setTickets(response.data || []);
       } catch (requestError) {
         setError(
@@ -41,7 +44,16 @@ function Tickets() {
     }
 
     loadTickets();
-  }, []);
+  }, [search]);
+
+  // const fetchTickets = async (searchValue ="") => {
+  //   try {
+  //     const response = await getTickets(searchValue);
+  //     setSearch(response);
+  //   } catch (error) {
+  //     console.error("Get Tickets Error:", error);
+  //   }
+  // }
 
   async function handleDelete(ticketId) {
     if (!window.confirm("Are you sure you want to delete this ticket?")) {
@@ -99,6 +111,22 @@ function Tickets() {
         <Link className="admin-header-button" to="/admin/tickets/add">
           Add Ticket
         </Link>
+      </div>
+
+      {/* add the basic filter here */}
+      <div>Search</div>
+      <div>
+        <div>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by ID, Subject, Status, Priority, Customer, Assigned staff"
+          />
+        </div>
+        {/* <div>
+
+        </div> */}
       </div>
 
       <div className="table-container">

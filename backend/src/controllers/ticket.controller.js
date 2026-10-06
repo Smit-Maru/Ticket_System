@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql, or, ilike } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "../db/index.js";
 import { tickets, users } from "../../drizzle/schema.ts";
@@ -27,7 +27,8 @@ function getTicketAccessFilter(user, ticketId) {
 
 export const getTickets = async (req, res) => {
   try {
-    // Same users table is used for both customer and staff
+    const { search } = req.query;
+
     const customer = alias(users, "customer");
     const staff = alias(users, "staff");
 
@@ -39,33 +40,56 @@ export const getTickets = async (req, res) => {
         status: tickets.status,
         priority: tickets.priority,
 
-        // Customer information
         customerId: tickets.customerid,
         customerName: customer.name,
 
-        // Assigned staff information
         assignedTo: tickets.assignedto,
         staffName: staff.name,
 
         createdat: tickets.createdat,
       })
       .from(tickets)
-
       .leftJoin(customer, eq(tickets.customerid, customer.userid))
-
       .leftJoin(staff, eq(tickets.assignedto, staff.userid));
+
+    // Store all conditions here
+    const filters = [];
 
     // Staff can only see tickets assigned to themselves
     if (req.user.role === "staff") {
-      query = query.where(eq(tickets.assignedto, Number(req.user.userId)));
+      filters.push(
+        eq(tickets.assignedto, Number(req.user.userId))
+      );
     }
 
-    // Normal user can only see their own tickets
+    // User can only see their own tickets
     else if (req.user.role === "user") {
-      query = query.where(eq(tickets.customerid, Number(req.user.userId)));
+      filters.push(
+        eq(tickets.customerid, Number(req.user.userId))
+      );
     }
 
-    // Admin can see all tickets
+    // Search
+    if (search && search.trim() !== "") {
+      const searchValue = `%${search.trim()}%`;
+
+      filters.push(
+        or(
+          sql`${tickets.ticketid}::text ILIKE ${searchValue}`,
+          ilike(tickets.subject, searchValue),
+          ilike(tickets.status, searchValue),
+          ilike(tickets.priority, searchValue),
+          ilike(customer.name, searchValue),
+          ilike(staff.name, searchValue),
+        )
+      );
+    }
+
+    // Apply all filters together
+    if (filters.length > 0) {
+      query = query.where(and(...filters));
+    }
+
     const result = await query.orderBy(
       sql`
         CASE

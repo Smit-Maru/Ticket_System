@@ -16,6 +16,7 @@ function Users() {
         setError("");
 
         const response = await getUsers();
+        console.log("Get Users Response:", response);
 
         if (response.success) {
           setUsers(response.data);
@@ -123,7 +124,7 @@ function Users() {
               !error &&
               users.map((user) => (
                 <tr key={user.userid}>
-                  <td>{user.userid}</td>
+                  <td>{user.roleid}</td>
 
                   <td>{user.name}</td>
 

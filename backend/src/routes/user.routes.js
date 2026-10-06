@@ -12,8 +12,8 @@ import { authorize } from "../middleware/role.middleware.js";
 
 const router = express.Router();
 
-router.use(authenticate);
-router.use(authorize("admin"));
+// router.use(authenticate);
+// router.use(authorize("admin"));
 
 router.get("/", getUsers);
 

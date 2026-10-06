@@ -1,7 +1,11 @@
 import apiClient from "./apiClient";
 
-export const getTickets = async () => {
-  const response = await apiClient.get("/tickets");
+export const getTickets = async (search = "") => {
+  const response = await apiClient.get("/tickets", {
+    params: {
+      search,
+    },
+  });
 
   return response.data;
 };

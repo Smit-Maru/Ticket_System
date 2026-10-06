@@ -53,16 +53,30 @@ export const addUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
     const passwordhash = await bcrypt.hash(password, 12);
-
+    
     const result = await db
       .insert(users)
       .values({
         name: name,
         email: email,
         passwordhash: passwordhash,
-        role: role,
+        role: role
       })
       .returning();
+
+      const user = result[0];
+
+      let roleid = null;
+
+      roleid = `CUST_${user.userid}`;
+  
+      const updatedUser = await db
+        .update(users)
+        .set({
+          roleid,
+        })
+        .where(eq(users.userid, user.userid))
+        .returning();
 
     res.status(201).json({
       success: true,
