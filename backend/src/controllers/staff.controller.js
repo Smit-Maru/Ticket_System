@@ -2,6 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { users } from "../../drizzle/schema.ts";
 import bcrypt from "bcrypt";
+import { sendServerError } from "../middleware/error.middleware.js";
 
 export const getStaff = async (req, res) => {
   try {
@@ -12,12 +13,12 @@ export const getStaff = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    sendServerError(
+      res,
+      error,
+      "Get staff failed",
+      "Unable to load staff right now. Please try again.",
+    );
   }
 };
 
@@ -49,11 +50,12 @@ export const getStaffById = async (req, res) => {
       data: result[0],
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    sendServerError(
+      res,
+      error,
+      "Get staff member failed",
+      "Unable to load this staff member right now. Please try again.",
+    );
   }
 };
 
@@ -86,11 +88,12 @@ export const createStaff = async (req, res) => {
       data: result[0],
     });
   } catch (error) {
-    console.error("Create Staff Error:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    sendServerError(
+      res,
+      error,
+      "Create staff failed",
+      "Unable to create the staff member. Please check the details and try again.",
+    );
   }
 };
 
@@ -139,12 +142,12 @@ export const updateStaff = async (req, res) => {
       data: result[0],
     });
   } catch (error) {
-    console.error("Update Staff Error:", error);
-
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    sendServerError(
+      res,
+      error,
+      "Update staff failed",
+      "Unable to update the staff member. Please check the details and try again.",
+    );
   }
 };
 
@@ -168,11 +171,12 @@ export const deleteStaff = async (req, res) => {
       message: "Staff deleted successfully",
     });
   } catch (error) {
-    console.error("Delete Staff Error:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    sendServerError(
+      res,
+      error,
+      "Delete staff failed",
+      "Unable to delete the staff member right now. Please try again.",
+    );
   }
 };
 
@@ -189,10 +193,11 @@ export const staffDropdown = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    console.error("Staff Dropdown Error:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    sendServerError(
+      res,
+      error,
+      "Load staff options failed",
+      "Unable to load staff options right now. Please try again.",
+    );
   }
 };

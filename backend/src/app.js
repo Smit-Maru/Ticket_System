@@ -7,6 +7,11 @@ import loginRoutes from "./routes/login.routes.js";
 import staffRoutes from "./routes/staff.routes.js";
 import ticketRoutes from "./routes/ticket.routes.js";
 import commentRoutes from "./routes/comment.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js"
+import {
+  errorHandler,
+  notFoundHandler,
+} from "./middleware/error.middleware.js";
 
 const app = express();
 
@@ -31,7 +36,11 @@ app.use("/api/users", userRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/comment", commentRoutes);
+app.use("/api/dashboard", dashboardRoutes)
 
 app.use("/api", loginRoutes);
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 export default app;

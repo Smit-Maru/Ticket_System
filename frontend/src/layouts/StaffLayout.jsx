@@ -7,7 +7,6 @@ function StaffLayout() {
   return (
     <div className="staff-layout">
       <StaffSidebar />
-
       <div className="staff-main">
         <StaffNavbar />
 
@@ -15,6 +14,7 @@ function StaffLayout() {
           <Outlet />
         </main>
       </div>
+
     </div>
   );
 }

@@ -1,25 +1,48 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getTickets } from "../../api/ticketApi";
 import "./Dashboard.css";
-import { createTicket, getTickets } from "../../api/ticketApi";
+
+const ticketStatuses = [
+  { key: "open", label: "Open" },
+  { key: "in_progress", label: "In progress" },
+  { key: "waiting_for_user", label: "Waiting for user" },
+  { key: "resolved", label: "Resolved" },
+  { key: "closed", label: "Closed" },
+];
+
+const ticketPriorities = [
+  { key: "high", label: "High priority" },
+  { key: "medium", label: "Medium priority" },
+  { key: "low", label: "Low priority" },
+];
+
+function getTicketCount(tickets, field, value) {
+  return tickets.filter(
+    (ticket) => ticket[field]?.toLowerCase() === value,
+  ).length;
+}
 
 function Dashboard() {
   const [tickets, setTickets] = useState([]);
-  const [subject, setSubject] = useState("");
-  const [description, setDescription] = useState("");
-  const [showTicketForm, setShowTicketForm] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     async function loadTickets() {
       try {
         const response = await getTickets();
+
+        if (!response.success) {
+          setError(response.message || "Unable to load your tickets.");
+          return;
+        }
+
         setTickets(response.data || []);
       } catch (requestError) {
         setError(
-          requestError.response?.data?.message || "Unable to load tickets.",
+          requestError.response?.data?.message ||
+            "Unable to load your tickets.",
         );
       } finally {
         setLoading(false);
@@ -29,130 +52,62 @@ function Dashboard() {
     loadTickets();
   }, []);
 
-  async function handleCreateTicket(event) {
-    event.preventDefault();
-    setError("");
-    setSaving(true);
-
-    try {
-      const response = await createTicket({ subject, description });
-
-      if (!response.success) {
-        throw new Error(response.message || "Unable to create ticket.");
-      }
-
-      setTickets((currentTickets) => [response.data, ...currentTickets]);
-      setSubject("");
-      setDescription("");
-      setShowTicketForm(false);
-    } catch (requestError) {
-      setError(requestError.response?.data?.message || requestError.message);
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  const openTicketCount = tickets.filter(
-    (ticket) => ticket.status === "open",
-  ).length;
-  const resolvedTicketCount = tickets.filter((ticket) =>
-    ["resolved", "closed"].includes(ticket.status),
-  ).length;
-
   return (
-    <div className="user-dashboard-content">
-      <section className="user-heading" id="overview">
+    <section className="user-dashboard">
+      <div className="user-dashboard-heading">
         <div>
-          <h1>Welcome back, Maya</h1>
-          <p>Here is a quick look at your support activity.</p>
+          <h1>My dashboard</h1>
+          <p>A quick summary of your support tickets.</p>
         </div>
-        <button
-          className="user-action"
-          type="button"
-          onClick={() => setShowTicketForm((isVisible) => !isVisible)}
-        >
+        <Link className="user-dashboard-action" to="/user/tickets/add">
           New ticket
-        </button>
-      </section>
+        </Link>
+      </div>
 
-      {showTicketForm && (
-        <form className="ticket-create-form" onSubmit={handleCreateTicket}>
-          <label>
-            Subject
-            <input
-              value={subject}
-              onChange={(event) => setSubject(event.target.value)}
-              maxLength="255"
-              required
-            />
-          </label>
-          <label>
-            Description
-            <textarea
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              required
-            />
-          </label>
-          {error && <p role="alert">{error}</p>}
-          <div>
-            <button type="button" onClick={() => setShowTicketForm(false)}>
-              Cancel
-            </button>
-            <button type="submit" disabled={saving}>
-              {saving ? "Creating..." : "Create ticket"}
-            </button>
-          </div>
-        </form>
+      {error && (
+        <p className="user-dashboard-error" role="alert">
+          {error}
+        </p>
       )}
 
-      <section className="user-stats" aria-label="Ticket summary">
-        <article className="user-stat">
-          <span>Open tickets</span>
-          <strong>{openTicketCount}</strong>
-          <small>Needs your attention</small>
+      <div className="user-dashboard-cards">
+        <article className="user-dashboard-card">
+          <span>Total tickets</span>
+          <strong>{loading ? "..." : tickets.length}</strong>
         </article>
-        <article className="user-stat">
-          <span>Resolved tickets</span>
-          <strong>{resolvedTicketCount}</strong>
-          <small>All time</small>
-        </article>
-        <article className="user-stat">
-          <span>Average response</span>
-          <strong>2h</strong>
-          <small>Our team's average</small>
-        </article>
+      </div>
+
+      <section className="user-dashboard-panel">
+        <div className="user-dashboard-panel-heading">
+          <h2>Tickets by status</h2>
+          <Link to="/user/tickets">View my tickets</Link>
+        </div>
+        <div className="user-dashboard-cards">
+          {ticketStatuses.map(({ key, label }) => (
+            <article className="user-dashboard-card" key={key}>
+              <span>{label}</span>
+              <strong>
+                {loading ? "..." : getTicketCount(tickets, "status", key)}
+              </strong>
+            </article>
+          ))}
+        </div>
       </section>
 
-      <section className="user-panel" id="tickets">
-        <div className="user-panel-heading">
-          <div>
-            <h2>Recent tickets</h2>
-            <p>Track your latest support requests.</p>
-          </div>
-          <Link className="user-action" to="/user/tickets">
-            View all
-          </Link>
+      {/* <section className="user-dashboard-panel">
+        <h2>Tickets by priority</h2>
+        <div className="user-dashboard-cards">
+          {ticketPriorities.map(({ key, label }) => (
+            <article className="user-dashboard-card" key={key}>
+              <span>{label}</span>
+              <strong>
+                {loading ? "..." : getTicketCount(tickets, "priority", key)}
+              </strong>
+            </article>
+          ))}
         </div>
-        <div className="ticket-list">
-          {error && !showTicketForm && <p role="alert">{error}</p>}
-          {loading && <p>Loading tickets...</p>}
-          {!loading && tickets.length === 0 && <p>No tickets found.</p>}
-          {!loading &&
-            tickets.slice(0, 5).map((ticket) => (
-              <div className="ticket-row" key={ticket.ticketid}>
-                <div>
-                  <strong>TK-{String(ticket.ticketid).padStart(4, "0")}</strong>
-                  <span>{ticket.subject}</span>
-                </div>
-                <b className="ticket-status">
-                  {ticket.status.replaceAll("_", " ")}
-                </b>
-              </div>
-            ))}
-        </div>
-      </section>
-    </div>
+      </section> */}
+    </section>
   );
 }
 

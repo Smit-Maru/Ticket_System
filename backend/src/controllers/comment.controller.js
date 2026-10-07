@@ -1,6 +1,7 @@
 import { and, asc, eq } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { comments, tickets, users } from "../../drizzle/schema.ts";
+import { sendServerError } from "../middleware/error.middleware.js";
 
 async function getAccessibleTicket(req, res) {
   const ticketId = Number(req.params.ticketId);
@@ -57,8 +58,12 @@ export const getTicketComments = async (req, res) => {
 
     res.status(200).json({ success: true, data: result });
   } catch (error) {
-    console.error("Get Ticket Comments Error:", error);
-    res.status(500).json({ success: false, message: error.message });
+    sendServerError(
+      res,
+      error,
+      "Get ticket comments failed",
+      "Unable to load comments right now. Please try again.",
+    );
   }
 };
 
@@ -107,7 +112,11 @@ export const addTicketComment = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    console.error("Add Ticket Comment Error:", error);
-    res.status(500).json({ success: false, message: error.message });
+    sendServerError(
+      res,
+      error,
+      "Add ticket comment failed",
+      "Unable to add the comment right now. Please try again.",
+    );
   }
 };

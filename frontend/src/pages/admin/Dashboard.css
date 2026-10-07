@@ -1,0 +1,141 @@
+.dashboard {
+  padding: 32px 34px;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+/* Header */
+.dashboard-header {
+  margin-bottom: 24px;
+}
+
+.dashboard-header h1 {
+  margin: 0 0 8px;
+  font-size: 32px;
+  font-weight: 700;
+  color: #172b4d;
+}
+
+.dashboard-header p {
+  margin: 0;
+  font-size: 16px;
+  color: #64748b;
+}
+
+/* Error */
+.dashboard-error {
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border-radius: 6px;
+  background-color: #fef2f2;
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+/* Main dashboard cards */
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.dashboard-card {
+  min-height: 120px;
+  padding: 24px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.dashboard-card h3 {
+  margin: 0 0 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.dashboard-card p {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: #172b4d;
+}
+
+/* Ticket Status Section */
+.dashboard-section {
+  margin-top: 10px;
+}
+
+.dashboard-section h2 {
+  margin: 0 0 18px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #172b4d;
+}
+
+/* Status cards */
+.dashboard-status-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+.dashboard-status-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 110px;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.dashboard-status-card span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.dashboard-status-card strong {
+  margin-top: 12px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #172b4d;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .dashboard-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-status-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 24px 20px;
+  }
+
+  .dashboard-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-status-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-status-grid {
+    grid-template-columns: 1fr;
+  }
+}

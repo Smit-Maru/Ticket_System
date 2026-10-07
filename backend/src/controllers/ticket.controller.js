@@ -1,7 +1,8 @@
-import { and, desc, eq, sql, or, ilike } from "drizzle-orm";
+import { and, desc, eq, sql, or, ilike, isNull } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "../db/index.js";
 import { tickets, users } from "../../drizzle/schema.ts";
+import { sendServerError } from "../middleware/error.middleware.js";
 
 const ticketStatusValues = [
   "open",
@@ -27,7 +28,7 @@ function getTicketAccessFilter(user, ticketId) {
 
 export const getTickets = async (req, res) => {
   try {
-    const { search } = req.query;
+    const { search, status, priority} = req.query;
 
     const customer = alias(users, "customer");
     const staff = alias(users, "staff");
@@ -72,18 +73,35 @@ export const getTickets = async (req, res) => {
     // Search
     if (search && search.trim() !== "") {
       const searchValue = `%${search.trim()}%`;
-
-      filters.push(
-        or(
-          sql`${tickets.ticketid}::text ILIKE ${searchValue}`,
-          ilike(tickets.subject, searchValue),
-          ilike(tickets.status, searchValue),
-          ilike(tickets.priority, searchValue),
-          ilike(customer.name, searchValue),
-          ilike(staff.name, searchValue),
-        )
-      );
+    
+      const searchFilters = [
+        sql`${tickets.ticketid}::text ILIKE ${searchValue}`,
+        ilike(tickets.subject, searchValue),
+        ilike(tickets.status, searchValue),
+        ilike(tickets.priority, searchValue),
+        ilike(customer.name, searchValue),
+        ilike(staff.name, searchValue),
+      ];
+    
+      if (search.trim().toLowerCase() === "unassigned") {
+        searchFilters.push(isNull(tickets.assignedto));
+      }
+    
+      filters.push(or(...searchFilters));
     }
+
+    //filter
+    if(status && status.trim() !== ""){
+      filters.push(eq(tickets.status,status))
+    }
+
+    if(priority && priority.trim() !== ""){
+      filters.push(eq(tickets.priority,priority))
+    }
+
+    // if(assignedStaff && assignedStaff !== ""){
+    //   filters.push(eq(tickets.assignedStaff,assignedStaff))
+    // }
 
     // Apply all filters together
     if (filters.length > 0) {
@@ -108,12 +126,12 @@ export const getTickets = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    console.error("Get Tickets Error:", error);
-
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    sendServerError(
+      res,
+      error,
+      "Get tickets failed",
+      "Unable to load tickets right now. Please try again.",
+    );
   }
 };
 
@@ -142,17 +160,18 @@ export const getTicketById = async (req, res) => {
       data: result[0],
     });
   } catch (error) {
-    console.error("Get Ticket Error:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    sendServerError(
+      res,
+      error,
+      "Get ticket failed",
+      "Unable to load this ticket right now. Please try again.",
+    );
   }
 };
 
 export const createTicket = async (req, res) => {
   try {
-    const { subject, description } = req.body;
+    const { subject, description, priority, status, assignedto } = req.body;
 
     // Get customer ID from logged-in user's JWT
     const customerId = Number(req.user.userId);
@@ -167,19 +186,38 @@ export const createTicket = async (req, res) => {
         message: "Subject and description are required",
       });
     }
+    
+    let result;
 
-    const result = await db
-      .insert(tickets)
-      .values({
-        subject,
-        description,
-        customerid: customerId,
-        assignedto: null,
-        assignedat: null,
-        status: "open",
-        priority: "low",
-      })
-      .returning();
+
+    if(req.params.role === "user"){
+      result = await db
+        .insert(tickets)
+        .values({
+          subject,
+          description,
+          customerid: customerId,
+          assignedto: null,
+          assignedat: null,
+          status: "open",
+          priority: "low",
+        })
+        .returning();
+    } else {
+      result = await db
+        .insert(tickets)
+        .values({
+          subject,
+          description,
+          customerid: customerId,
+          assignedto: assignedto,
+          assignedat: null,
+          status: status,
+          priority: priority,
+        })
+        .returning();
+    }
+
 
     return res.status(201).json({
       success: true,
@@ -187,12 +225,12 @@ export const createTicket = async (req, res) => {
       data: result[0],
     });
   } catch (error) {
-    console.error("Create Ticket Error:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendServerError(
+      res,
+      error,
+      "Create ticket failed",
+      "Unable to create the ticket right now. Please try again.",
+    );
   }
 };
 
@@ -274,11 +312,12 @@ export const updateTicket = async (req, res) => {
       data: result[0],
     });
   } catch (error) {
-    console.error("Update Ticket Error:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    sendServerError(
+      res,
+      error,
+      "Update ticket failed",
+      "Unable to update the ticket right now. Please try again.",
+    );
   }
 };
 
@@ -301,10 +340,11 @@ export const deleteTicket = async (req, res) => {
       message: "Ticket deleted successfully",
     });
   } catch (error) {
-    console.error("Delete Ticket Error:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    sendServerError(
+      res,
+      error,
+      "Delete ticket failed",
+      "Unable to delete the ticket right now. Please try again.",
+    );
   }
 };

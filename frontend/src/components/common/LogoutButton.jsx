@@ -7,6 +7,7 @@ function LogoutButton({ className, children = "Logout" }) {
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [error, setError] = useState("");
+  const [isHovered, setIsHovered] = useState(false);
 
   async function handleLogout() {
     setError("");
@@ -33,9 +34,21 @@ function LogoutButton({ className, children = "Logout" }) {
         onClick={handleLogout}
         disabled={isLoggingOut}
         aria-busy={isLoggingOut}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          backgroundColor: isHovered ? "#dc2626" : "#ffffff",
+          color: isHovered ? "#ffffff" : "#dc2626",
+          border: "1px solid #dc2626",
+          borderRadius: "6px",
+          padding: "8px 14px",
+          cursor: isLoggingOut ? "not-allowed" : "pointer",
+          transition: "background-color 0.2s ease, color 0.2s ease",
+        }}
       >
         {isLoggingOut ? "Logging out..." : children}
       </button>
+
       {error && (
         <span className="logout-error" role="alert">
           {error}

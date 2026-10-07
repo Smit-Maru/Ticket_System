@@ -1,14 +1,19 @@
 .staff-layout {
-  min-height: 100vh;
   display: flex;
+  width: 100%;
+  min-height: 100vh;
   background: #f5f7fb;
   color: #243047;
+}
+.staff-main {
+  min-width: 0;
+  flex: 1;
 }
 .staff-sidebar {
   width: 220px;
   flex: none;
   padding: 26px 14px;
-  border-right: 1px solid #e5eaf1;
+  border-left: 1px solid #e5eaf1;
   background: #fff;
 }
 .staff-logo {
@@ -48,9 +53,8 @@
 }
 .staff-content {
   width: 100%;
-  max-width: 1200px;
+  box-sizing: border-box;
   padding: 32px;
-  margin: 0 auto;
 }
 .staff-content h1 {
   margin: 0 0 8px;
@@ -102,11 +106,15 @@
 }
 @media (max-width: 600px) {
   .staff-layout {
-    display: block;
+    flex-direction: column;
   }
   .staff-sidebar {
+    order: -1;
     width: 100%;
+    box-sizing: border-box;
     padding: 18px;
+    border-left: 0;
+    border-bottom: 1px solid #e5eaf1;
   }
   .staff-logo {
     margin-bottom: 15px;

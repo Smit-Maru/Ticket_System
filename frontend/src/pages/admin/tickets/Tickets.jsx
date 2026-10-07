@@ -26,34 +26,44 @@ function Tickets() {
 
   const [search, setSearch] = useState("");
 
+  // states for the filter
+  const [status, setStatus] = useState("");
+  const [priority, setPriority] = useState();
+  // const [assignedStaff, setAssignedStaff] = useState();
+  const [appliedFilter, setAppliedFilter] = useState();
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function loadTickets() {
-      try {
-        const response = await getTickets(search);
-        console.log(response)
-        setTickets(response.data || []);
-      } catch (requestError) {
-        setError(
-          requestError.response?.data?.message || "Unable to load tickets.",
-        );
-      } finally {
-        setLoading(false);
+    const timer = setTimeout(async () => {
+      async function loadTickets() {
+        try {
+          setLoading(true);
+          setError("");
+
+          const response = await getTickets(
+            search,
+            status,
+            priority,
+            // assignedStaff,
+          );
+          setTickets(response.data || []);
+        } catch (requestError) {
+          setError(
+            requestError.response?.data?.message || "Unable to load tickets.",
+          );
+        } finally {
+          setLoading(false);
+        }
       }
-    }
 
-    loadTickets();
-  }, [search]);
+      loadTickets();
+    }, 500);
 
-  // const fetchTickets = async (searchValue ="") => {
-  //   try {
-  //     const response = await getTickets(searchValue);
-  //     setSearch(response);
-  //   } catch (error) {
-  //     console.error("Get Tickets Error:", error);
-  //   }
-  // }
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [search, appliedFilter]);
 
   async function handleDelete(ticketId) {
     if (!window.confirm("Are you sure you want to delete this ticket?")) {
@@ -101,7 +111,7 @@ function Tickets() {
   }
 
   return (
-    <div>
+    <div className="admin-tickets-page">
       <div className="admin-header">
         <div>
           <h1>Tickets</h1>
@@ -113,20 +123,86 @@ function Tickets() {
         </Link>
       </div>
 
-      {/* add the basic filter here */}
-      <div>Search</div>
-      <div>
-        <div>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by ID, Subject, Status, Priority, Customer, Assigned staff"
-          />
-        </div>
-        {/* <div>
+      {/* Search and Filter */}
+      <div className="ticket-search-filter">
+        {/* Search */}
+        <div className="ticket-search-section">
+          <label htmlFor="ticket-search">Search</label>
 
-        </div> */}
+          <div className="ticket-search-input-wrapper">
+            <input
+              id="ticket-search"
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by ID, subject, customer, or staff..."
+            />
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="ticket-filter-controls">
+          <div className="ticket-filter-left">
+            <select value={status} onChange={(e) => setStatus(e.target.value)}>
+              <option value="">All Status</option>
+              <option value="open">Open</option>
+              <option value="in_progress">In Progress</option>
+              <option value="waiting_for_user">Waiting for User</option>
+              <option value="resolved">Resolved</option>
+              <option value="closed">Closed</option>
+            </select>
+
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+            >
+              <option value="">All Priority</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+
+            {/* <select
+              value={assignedStaff}
+              onChange={(e) => setAssignedStaff(e.target.value)}
+            >
+              <option value="">All Staff</option>
+              <option value="unassigned">Unassigned</option>
+            </select> */}
+
+            <button
+              type="button"
+              className="clear-filter-btn"
+              onClick={() => {
+                setStatus("");
+                setPriority("");
+
+                setAppliedFilter({
+                  status: "",
+                  priority: "",
+                });
+
+                // setAssignedStaff("");
+              }}
+            >
+              Clear Filters
+            </button>
+          </div>
+
+          <button
+            type="button"
+            className="filter-btn"
+            onClick={() => {
+              setAppliedFilter({
+                status,
+                priority,
+                // assignedStaff,
+              });
+            }}
+          >
+            Filter
+          </button>
+        </div>
       </div>
 
       <div className="table-container">

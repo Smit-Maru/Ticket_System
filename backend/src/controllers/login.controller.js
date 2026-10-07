@@ -4,6 +4,7 @@ import { users } from "../../drizzle/schema.ts";
 
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { sendServerError } from "../middleware/error.middleware.js";
 
 export const login = async (req, res) => {
   try {
@@ -60,12 +61,12 @@ export const login = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Login Error:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    return sendServerError(
+      res,
+      error,
+      "Login failed",
+      "Unable to sign you in right now. Please try again.",
+    );
   }
 };
 
@@ -119,19 +120,20 @@ export const signUp = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Create User Error:", error);
-
     if (error.code === "23505") {
+      console.error("Sign up failed: email already registered.");
       return res.status(409).json({
         success: false,
         message: "Email already registered. Please use another email.",
       });
     }
 
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendServerError(
+      res,
+      error,
+      "Sign up failed",
+      "Unable to create your account right now. Please try again.",
+    );
   }
 };
 
