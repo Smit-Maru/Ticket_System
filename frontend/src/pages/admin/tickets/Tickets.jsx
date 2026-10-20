@@ -4,6 +4,7 @@ import {
   getTickets,
   getTicketById,
 } from "../../../api/ticketApi";
+import { staffDropdown } from "../../../api/staffApi";
 import { Link, useNavigate } from "react-router-dom";
 import "./Tickets.css";
 import TicketComments from "../../../components/tickets/TicketComments";
@@ -28,11 +29,50 @@ function Tickets() {
 
   // states for the filter
   const [status, setStatus] = useState("");
-  const [priority, setPriority] = useState();
-  // const [assignedStaff, setAssignedStaff] = useState();
+  const [priority, setPriority] = useState("");
+  const [assignedStaff, setAssignedStaff] = useState("");
   const [appliedFilter, setAppliedFilter] = useState();
 
+  const [staff, setStaff] = useState([]);
+  const [staffError, setStaffError] = useState("");
+
+  //for the paggination
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  // const [totalPages, setTotalPages] = useState(1);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadStaff() {
+      try {
+        const response = await staffDropdown();
+        if (!response.success || !Array.isArray(response.data)) {
+          throw new Error(response.message || "Unable to load staff options.");
+        }
+
+        if (isMounted) {
+          setStaff(response.data);
+        }
+      } catch (requestError) {
+        if (isMounted) {
+          setStaffError(
+            requestError.response?.data?.message ||
+              requestError.message ||
+              "Unable to load staff options.",
+          );
+        }
+      }
+    }
+
+    loadStaff();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(async () => {
@@ -43,11 +83,14 @@ function Tickets() {
 
           const response = await getTickets(
             search,
-            status,
-            priority,
-            // assignedStaff,
+            appliedFilter?.status ?? "",
+            appliedFilter?.priority ?? "",
+            page,
+            limit,
+            assignedStaff,
           );
           setTickets(response.data || []);
+          // setTotalPages(response.pagination?.totalPages || 1);
         } catch (requestError) {
           setError(
             requestError.response?.data?.message || "Unable to load tickets.",
@@ -63,7 +106,7 @@ function Tickets() {
     return () => {
       clearTimeout(timer);
     };
-  }, [search, appliedFilter]);
+  }, [search, appliedFilter, page, limit]);
 
   async function handleDelete(ticketId) {
     if (!window.confirm("Are you sure you want to delete this ticket?")) {
@@ -137,6 +180,7 @@ function Tickets() {
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by ID, subject, customer, or staff..."
             />
+            
           </div>
         </div>
 
@@ -162,13 +206,18 @@ function Tickets() {
               <option value="low">Low</option>
             </select>
 
-            {/* <select
+            <select
               value={assignedStaff}
               onChange={(e) => setAssignedStaff(e.target.value)}
             >
               <option value="">All Staff</option>
               <option value="unassigned">Unassigned</option>
-            </select> */}
+              {staff.map((member) => (
+                <option key={member.userid} value={String(member.userid)}>
+                  {member.name}
+                </option>
+              ))}
+            </select>
 
             <button
               type="button"
@@ -176,13 +225,13 @@ function Tickets() {
               onClick={() => {
                 setStatus("");
                 setPriority("");
+                setAssignedStaff("");
 
                 setAppliedFilter({
                   status: "",
                   priority: "",
+                  assignedStaff: "",
                 });
-
-                // setAssignedStaff("");
               }}
             >
               Clear Filters
@@ -196,7 +245,7 @@ function Tickets() {
               setAppliedFilter({
                 status,
                 priority,
-                // assignedStaff,
+                assignedStaff,
               });
             }}
           >
@@ -305,6 +354,49 @@ function Tickets() {
           </tbody>
         </table>
       </div>
+
+      {/* pagination */}
+      <div className="pagination">
+        <label>
+          Rows per page
+          <select
+            value={limit}
+            onChange={(e) => {
+              setLimit(Number(e.target.value));
+              setPage(1);
+            }}
+          >
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+        </label>
+
+        <label>No. of tickets : {tickets.length}</label>
+
+        <div>
+          <button
+            type="button"
+            disabled={page === 1}
+            onClick={() => {
+              setPage((prev) => prev - 1);
+            }}
+          >
+            Previous
+          </button>
+
+          <span>Page {page}</span>
+          <button
+            type="button"
+            onClick={() => setPage((prev) => prev + 1)}
+            disabled={tickets.length < limit}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
+      {staffError && <p role="alert">{staffError}</p>}
 
       {isPopUpOpen && selectedTicket && (
         <div className="ticket-popup-overlay">

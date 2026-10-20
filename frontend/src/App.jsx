@@ -20,6 +20,7 @@ import StaffTicketDetails from "./pages/staff/StaffTicketDetails";
 import UserLayout from "./layouts/UserLayout";
 import UserTickets from "./pages/user/Tickets";
 import UserAddTicket from "./pages/user/AddTicket";
+import RequireRole from "./components/auth/RequireRole";
 
 function App() {
   return (
@@ -28,32 +29,38 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="users" element={<Users />} />
-          <Route path="users/add" element={<AddUser />} />
-          <Route path="staff" element={<Staff />} />
-          <Route path="staff/add" element={<AddStaff />} />
-          <Route path="tickets" element={<Tickets />} />
-          <Route path="tickets/add" element={<AddTicket />} />
-          <Route path="tickets/:id" element={<TicketDetails />} />
-          <Route path="settings" element={<Settings />} />
+        <Route element={<RequireRole role="admin" />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="users" element={<Users />} />
+            <Route path="users/add" element={<AddUser />} />
+            <Route path="staff" element={<Staff />} />
+            <Route path="staff/add" element={<AddStaff />} />
+            <Route path="tickets" element={<Tickets />} />
+            <Route path="tickets/add" element={<AddTicket />} />
+            <Route path="tickets/:id" element={<TicketDetails />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
         </Route>
 
-        <Route path="/staff" element={<StaffLayout />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<StaffDashboard />} />
-          <Route path="tickets" element={<StaffTickets />} />
-          <Route path="tickets/:id" element={<StaffTicketDetails />} />
-          <Route path="profile" element={<StaffProfile />} />
+        <Route element={<RequireRole role="staff" />}>
+          <Route path="/staff" element={<StaffLayout />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<StaffDashboard />} />
+            <Route path="tickets" element={<StaffTickets />} />
+            <Route path="tickets/:id" element={<StaffTicketDetails />} />
+            <Route path="profile" element={<StaffProfile />} />
+          </Route>
         </Route>
 
-        <Route path="/user" element={<UserLayout />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<UserDashboard />} />
-          <Route path="tickets" element={<UserTickets />} />
-          <Route path="tickets/add" element={<UserAddTicket />} />
+        <Route element={<RequireRole role="user" />}>
+          <Route path="/user" element={<UserLayout />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<UserDashboard />} />
+            <Route path="tickets" element={<UserTickets />} />
+            <Route path="tickets/add" element={<UserAddTicket />} />
+          </Route>
         </Route>
 
         <Route path="*" element={<Navigate to="/login" replace />} />

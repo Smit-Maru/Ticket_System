@@ -16,3 +16,15 @@ export async function logout() {
   const response = await apiClient.post("/logout");
   return response.data;
 }
+
+export const refreshAccessToken = async () => {
+  const response = await apiClient.post("/refresh");
+
+  return response.data;
+};
+
+export const getCurrentSession = async () => {
+  const response = await apiClient.get("/session");
+
+  return response.data;
+};

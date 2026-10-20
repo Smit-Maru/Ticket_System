@@ -28,7 +28,18 @@ function getTicketAccessFilter(user, ticketId) {
 
 export const getTickets = async (req, res) => {
   try {
-    const { search, status, priority} = req.query;
+    const {
+      search,
+      status,
+      priority,
+      page = "1",
+      limit = "10",
+      assignedStaff,
+    } = req.query;
+
+    const pageNumber = Math.max(Number(page) || 1, 1);
+    const pageSize = Math.max(Number(limit) || 10, 1);
+    const offset = (pageNumber - 1) * pageSize;
 
     const customer = alias(users, "customer");
     const staff = alias(users, "staff");
@@ -53,18 +64,14 @@ export const getTickets = async (req, res) => {
       .leftJoin(customer, eq(tickets.customerid, customer.userid))
       .leftJoin(staff, eq(tickets.assignedto, staff.userid));
 
-    // Store all conditions here
     const filters = [];
 
-    // Staff can only see tickets assigned to themselves
+    // Role-based filter
     if (req.user.role === "staff") {
       filters.push(
         eq(tickets.assignedto, Number(req.user.userId))
       );
-    }
-
-    // User can only see their own tickets
-    else if (req.user.role === "user") {
+    } else if (req.user.role === "user") {
       filters.push(
         eq(tickets.customerid, Number(req.user.userId))
       );
@@ -73,7 +80,7 @@ export const getTickets = async (req, res) => {
     // Search
     if (search && search.trim() !== "") {
       const searchValue = `%${search.trim()}%`;
-    
+
       const searchFilters = [
         sql`${tickets.ticketid}::text ILIKE ${searchValue}`,
         ilike(tickets.subject, searchValue),
@@ -82,48 +89,60 @@ export const getTickets = async (req, res) => {
         ilike(customer.name, searchValue),
         ilike(staff.name, searchValue),
       ];
-    
-      if (search.trim().toLowerCase() === "unassigned") {
-        searchFilters.push(isNull(tickets.assignedto));
-      }
-    
+
       filters.push(or(...searchFilters));
     }
 
-    //filter
-    if(status && status.trim() !== ""){
-      filters.push(eq(tickets.status,status))
+    // Status filter
+    if (status && status.trim() !== "") {
+      filters.push(eq(tickets.status, status));
     }
 
-    if(priority && priority.trim() !== ""){
-      filters.push(eq(tickets.priority,priority))
+    // Priority filter
+    if (priority && priority.trim() !== "") {
+      filters.push(eq(tickets.priority, priority));
     }
 
-    // if(assignedStaff && assignedStaff !== ""){
-    //   filters.push(eq(tickets.assignedStaff,assignedStaff))
-    // }
+    // Assigned staff filter
+    if (assignedStaff && assignedStaff !== "") {
+      if (assignedStaff === "unassigned") {
+        filters.push(isNull(tickets.assignedto));
+      } else {
+        filters.push(
+          eq(tickets.assignedto, Number(assignedStaff))
+        );
+      }
+    }
 
-    // Apply all filters together
-    if (filters.length > 0) {
+    // Apply all filters
+    if (filters.length > 0) { 
       query = query.where(and(...filters));
     }
 
-    const result = await query.orderBy(
-      sql`
-        CASE
-          WHEN ${tickets.status} = 'closed' THEN 4
-          WHEN ${tickets.priority} = 'high' THEN 1
-          WHEN ${tickets.priority} = 'medium' THEN 2
-          WHEN ${tickets.priority} = 'low' THEN 3
-          ELSE 5
-        END
-      `,
-      desc(tickets.createdat),
-    );
+    // Ordering + pagination
+    const result = await query
+      .orderBy(
+        sql`
+          CASE
+            WHEN ${tickets.status} = 'closed' THEN 4
+            WHEN ${tickets.priority} = 'high' THEN 1
+            WHEN ${tickets.priority} = 'medium' THEN 2
+            WHEN ${tickets.priority} = 'low' THEN 3
+            ELSE 5
+          END
+        `,
+        desc(tickets.createdat),
+      )
+      .limit(pageSize)
+      .offset(offset);
 
     res.status(200).json({
       success: true,
       data: result,
+      pagination: {
+        page: pageNumber,
+        limit: pageSize,
+      },
     });
   } catch (error) {
     sendServerError(
