@@ -8,6 +8,10 @@ import { staffDropdown } from "../../../api/staffApi";
 import { Link, useNavigate } from "react-router-dom";
 import "./Tickets.css";
 import TicketComments from "../../../components/tickets/TicketComments";
+import {
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 function formatTicketLabel(value = "") {
   return value
@@ -16,52 +20,102 @@ function formatTicketLabel(value = "") {
 }
 
 function Tickets() {
-  const [tickets, setTickets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  // No longer needed: TanStack Query manages tickets, loading, and errors.
+  // const [tickets, setTickets] = useState([]);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState("");
 
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
-
   const [commentsTicket, setCommentsTicket] = useState(null);
 
   const [search, setSearch] = useState("");
 
-  // states for the filter
+  // Filter states
   const [status, setStatus] = useState("");
   const [priority, setPriority] = useState("");
   const [assignedStaff, setAssignedStaff] = useState("");
-  const [appliedFilter, setAppliedFilter] = useState();
+  const [appliedFilter, setAppliedFilter] = useState({
+    status: "",
+    priority: "",
+    assignedStaff: "",
+  });
 
   const [staff, setStaff] = useState([]);
   const [staffError, setStaffError] = useState("");
+  const [actionError, setActionError] = useState("");
 
-  //for the paggination
+  // Pagination
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  // const [totalPages, setTotalPages] = useState(1);
 
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
+  // TanStack Query handles ticket fetching and caching.
+  const {
+    data: tickets = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [
+      "tickets",
+      search,
+      appliedFilter.status,
+      appliedFilter.priority,
+      appliedFilter.assignedStaff,
+      page,
+      limit,
+    ],
+
+    queryFn: async () => {
+      const response = await getTickets(
+        search,
+        appliedFilter.status,
+        appliedFilter.priority,
+        page,
+        limit,
+        appliedFilter.assignedStaff
+      );
+
+      if (!response.success) {
+        throw new Error(
+          response.message || "Unable to load tickets."
+        );
+      }
+
+      return response.data || [];
+    },
+
+    // Keep previous settings for the query defaults in queryClient.js.
+  });
+
+  // KEEP THIS useEffect: it loads staff dropdown options.
+  // This is separate from ticket-list caching.
   useEffect(() => {
     let isMounted = true;
 
     async function loadStaff() {
       try {
         const response = await staffDropdown();
+
         if (!response.success || !Array.isArray(response.data)) {
-          throw new Error(response.message || "Unable to load staff options.");
+          throw new Error(
+            response.message || "Unable to load staff options."
+          );
         }
 
         if (isMounted) {
           setStaff(response.data);
+          setStaffError("");
         }
       } catch (requestError) {
         if (isMounted) {
           setStaffError(
             requestError.response?.data?.message ||
               requestError.message ||
-              "Unable to load staff options.",
+              "Unable to load staff options."
           );
         }
       }
@@ -74,39 +128,41 @@ function Tickets() {
     };
   }, []);
 
-  useEffect(() => {
-    const timer = setTimeout(async () => {
-      async function loadTickets() {
-        try {
-          setLoading(true);
-          setError("");
-
-          const response = await getTickets(
-            search,
-            appliedFilter?.status ?? "",
-            appliedFilter?.priority ?? "",
-            page,
-            limit,
-            assignedStaff,
-          );
-          setTickets(response.data || []);
-          // setTotalPages(response.pagination?.totalPages || 1);
-        } catch (requestError) {
-          setError(
-            requestError.response?.data?.message || "Unable to load tickets.",
-          );
-        } finally {
-          setLoading(false);
-        }
-      }
-
-      loadTickets();
-    }, 500);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [search, appliedFilter, page, limit]);
+  // REMOVED: The old ticket-loading useEffect is not needed.
+  // useQuery now fetches tickets whenever its queryKey changes.
+  //
+  // useEffect(() => {
+  //   const timer = setTimeout(async () => {
+  //     async function loadTickets() {
+  //       try {
+  //         setLoading(true);
+  //         setError("");
+  //
+  //         const response = await getTickets(
+  //           search,
+  //           appliedFilter?.status ?? "",
+  //           appliedFilter?.priority ?? "",
+  //           page,
+  //           limit,
+  //           assignedStaff
+  //         );
+  //
+  //         setTickets(response.data || []);
+  //       } catch (requestError) {
+  //         setError(
+  //           requestError.response?.data?.message ||
+  //             "Unable to load tickets."
+  //         );
+  //       } finally {
+  //         setLoading(false);
+  //       }
+  //     }
+  //
+  //     loadTickets();
+  //   }, 500);
+  //
+  //   return () => clearTimeout(timer);
+  // }, [search, appliedFilter, page, limit]);
 
   async function handleDelete(ticketId) {
     if (!window.confirm("Are you sure you want to delete this ticket?")) {
@@ -117,15 +173,20 @@ function Tickets() {
       const response = await deleteTicket(ticketId);
 
       if (response.success) {
-        setTickets((currentTickets) =>
-          currentTickets.filter((ticket) => ticket.ticketid !== ticketId),
-        );
+        setActionError("");
+
+        await queryClient.invalidateQueries({
+          queryKey: ["tickets"],
+        });
       } else {
-        setError(response.message || "Unable to delete ticket.");
+        setActionError(
+          response.message || "Unable to delete ticket."
+        );
       }
     } catch (requestError) {
-      setError(
-        requestError.response?.data?.message || "Unable to delete ticket.",
+      setActionError(
+        requestError.response?.data?.message ||
+          "Unable to delete ticket."
       );
     }
   }
@@ -136,21 +197,51 @@ function Tickets() {
 
   const handleView = async (id) => {
     try {
+      setActionError("");
+
       const response = await getTicketById(id);
 
       if (response.success) {
         setSelectedTicket(response.data);
         setIsPopUpOpen(true);
+      } else {
+        setActionError(
+          response.message || "Unable to get ticket details."
+        );
       }
     } catch (requestError) {
-      setError(
-        requestError.response?.data?.message || "Unable to get ticket details.",
+      setActionError(
+        requestError.response?.data?.message ||
+          "Unable to get ticket details."
       );
     }
   };
 
   function handleComments(ticket) {
     setCommentsTicket(ticket);
+  }
+
+  function handleClearFilters() {
+    setStatus("");
+    setPriority("");
+    setAssignedStaff("");
+    setPage(1);
+
+    setAppliedFilter({
+      status: "",
+      priority: "",
+      assignedStaff: "",
+    });
+  }
+
+  function handleApplyFilters() {
+    setPage(1);
+
+    setAppliedFilter({
+      status,
+      priority,
+      assignedStaff,
+    });
   }
 
   return (
@@ -168,7 +259,6 @@ function Tickets() {
 
       {/* Search and Filter */}
       <div className="ticket-search-filter">
-        {/* Search */}
         <div className="ticket-search-section">
           <label htmlFor="ticket-search">Search</label>
 
@@ -177,17 +267,21 @@ function Tickets() {
               id="ticket-search"
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
               placeholder="Search by ID, subject, customer, or staff..."
             />
-            
           </div>
         </div>
 
-        {/* Filters */}
         <div className="ticket-filter-controls">
           <div className="ticket-filter-left">
-            <select value={status} onChange={(e) => setStatus(e.target.value)}>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
               <option value="">All Status</option>
               <option value="open">Open</option>
               <option value="in_progress">In Progress</option>
@@ -212,8 +306,12 @@ function Tickets() {
             >
               <option value="">All Staff</option>
               <option value="unassigned">Unassigned</option>
+
               {staff.map((member) => (
-                <option key={member.userid} value={String(member.userid)}>
+                <option
+                  key={member.userid}
+                  value={String(member.userid)}
+                >
                   {member.name}
                 </option>
               ))}
@@ -222,17 +320,7 @@ function Tickets() {
             <button
               type="button"
               className="clear-filter-btn"
-              onClick={() => {
-                setStatus("");
-                setPriority("");
-                setAssignedStaff("");
-
-                setAppliedFilter({
-                  status: "",
-                  priority: "",
-                  assignedStaff: "",
-                });
-              }}
+              onClick={handleClearFilters}
             >
               Clear Filters
             </button>
@@ -241,18 +329,16 @@ function Tickets() {
           <button
             type="button"
             className="filter-btn"
-            onClick={() => {
-              setAppliedFilter({
-                status,
-                priority,
-                assignedStaff,
-              });
-            }}
+            onClick={handleApplyFilters}
           >
             Filter
           </button>
         </div>
       </div>
+
+      {actionError && (
+        <p role="alert">{actionError}</p>
+      )}
 
       <div className="table-container">
         <table>
@@ -269,30 +355,33 @@ function Tickets() {
           </thead>
 
           <tbody>
-            {loading && (
+            {isLoading && (
               <tr>
                 <td colSpan="7">Loading tickets...</td>
               </tr>
             )}
 
-            {!loading && error && (
+            {isError && (
               <tr>
-                <td colSpan="7">{error}</td>
+                <td colSpan="7">
+                  {error?.response?.data?.message ||
+                    error?.message ||
+                    "Unable to load tickets."}
+                </td>
               </tr>
             )}
 
-            {!loading && !error && tickets.length === 0 && (
+            {!isLoading && !isError && tickets.length === 0 && (
               <tr>
                 <td colSpan="7">No tickets found.</td>
               </tr>
             )}
 
-            {!loading &&
-              !error &&
+            {!isLoading &&
+              !isError &&
               tickets.map((ticket) => (
                 <tr key={ticket.ticketid}>
                   <td>{ticket.ticketid}</td>
-
                   <td>{ticket.subject}</td>
 
                   <td>
@@ -312,8 +401,8 @@ function Tickets() {
                   </td>
 
                   <td>{ticket.customerName || "Unknown"}</td>
-
                   <td>{ticket.staffName || "Unassigned"}</td>
+
                   <td>
                     <button
                       className="view-btn"
@@ -355,7 +444,7 @@ function Tickets() {
         </table>
       </div>
 
-      {/* pagination */}
+      {/* Pagination */}
       <div className="pagination">
         <label>
           Rows per page
@@ -372,20 +461,19 @@ function Tickets() {
           </select>
         </label>
 
-        <label>No. of tickets : {tickets.length}</label>
+        <label>No. of tickets: {tickets.length}</label>
 
         <div>
           <button
             type="button"
             disabled={page === 1}
-            onClick={() => {
-              setPage((prev) => prev - 1);
-            }}
+            onClick={() => setPage((prev) => prev - 1)}
           >
             Previous
           </button>
 
           <span>Page {page}</span>
+
           <button
             type="button"
             onClick={() => setPage((prev) => prev + 1)}
@@ -471,7 +559,9 @@ function Tickets() {
 
               <div className="ticket-detail">
                 <span>Assigned At</span>
-                <p>{selectedTicket.tickets.assignedat || "Not assigned"}</p>
+                <p>
+                  {selectedTicket.tickets.assignedat || "Not assigned"}
+                </p>
               </div>
             </div>
 
