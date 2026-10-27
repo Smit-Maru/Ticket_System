@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../api/authApi";
 import "./LogoutButton.css";
+import { queryPersister } from "../../lib/queryPersister";
+import { queryClient } from "../../lib/queryClient";
 
 function LogoutButton({ className, children = "Logout" }) {
   const navigate = useNavigate();
@@ -15,6 +17,13 @@ function LogoutButton({ className, children = "Logout" }) {
 
     try {
       await logout();
+
+      // Clear cached API data from memory.
+      queryClient.clear();
+
+      // Clear persisted cached data from sessionStorage.
+      await queryPersister.removeClient();
+
       navigate("/login", { replace: true });
     } catch (requestError) {
       setError(

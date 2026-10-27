@@ -13,13 +13,16 @@
   "type": "module",
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
+    "@tanstack/query-sync-storage-persister": "^5.104.5",
+    "@tanstack/react-query-persist-client": "^5.104.5",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^18.0.4",
     "drizzle-orm": "^0.45.3",
     "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3"
+    "jsonwebtoken": "^9.0.3",
+    "redis": "^6.3.0"
   },
   "devDependencies": {
     "drizzle-kit": "^0.31.11",

@@ -4,6 +4,9 @@ import { db } from "../db/index.js";
 import { tickets, users } from "../../drizzle/schema.ts";
 import { sendServerError } from "../middleware/error.middleware.js";
 
+import { redisClient } from "../config/redis.js";
+import { invalidateTicketCache } from "../config/redis.js";
+
 const ticketStatusValues = [
   "open",
   "in_progress",
@@ -28,6 +31,35 @@ function getTicketAccessFilter(user, ticketId) {
 
 export const getTickets = async (req, res) => {
   try {
+    // Create a unique cache key for this user's ticket query.
+    const cacheKey = `tickets:v1:${JSON.stringify({
+      role: req.user.role,
+      userId: req.user.userId,
+      search: req.query.search ?? "",
+      status: req.query.status ?? "",
+      priority: req.query.priority ?? "",
+      page: req.query.page ?? "1",
+      limit: req.query.limit ?? "10",
+      assignedStaff: req.query.assignedStaff ?? "",
+    })}`;
+
+    // Check Redis before querying PostgreSQL.
+    if (redisClient.isReady) {
+      try {
+        const cachedData = await redisClient.get(cacheKey);
+
+        if (cachedData !== null) {
+          console.log("CACHE HIT:", cacheKey);
+
+          return res.status(200).json(JSON.parse(cachedData));
+        }
+      } catch (cacheError) {
+        console.error("Redis cache read failed:", cacheError.message);
+      }
+    }
+
+    console.log("CACHE MISS:", cacheKey);
+
     const {
       search,
       status,
@@ -68,13 +100,9 @@ export const getTickets = async (req, res) => {
 
     // Role-based filter
     if (req.user.role === "staff") {
-      filters.push(
-        eq(tickets.assignedto, Number(req.user.userId))
-      );
+      filters.push(eq(tickets.assignedto, Number(req.user.userId)));
     } else if (req.user.role === "user") {
-      filters.push(
-        eq(tickets.customerid, Number(req.user.userId))
-      );
+      filters.push(eq(tickets.customerid, Number(req.user.userId)));
     }
 
     // Search
@@ -108,14 +136,12 @@ export const getTickets = async (req, res) => {
       if (assignedStaff === "unassigned") {
         filters.push(isNull(tickets.assignedto));
       } else {
-        filters.push(
-          eq(tickets.assignedto, Number(assignedStaff))
-        );
+        filters.push(eq(tickets.assignedto, Number(assignedStaff)));
       }
     }
 
     // Apply all filters
-    if (filters.length > 0) { 
+    if (filters.length > 0) {
       query = query.where(and(...filters));
     }
 
@@ -136,14 +162,28 @@ export const getTickets = async (req, res) => {
       .limit(pageSize)
       .offset(offset);
 
-    res.status(200).json({
+    const responseData = {
       success: true,
       data: result,
       pagination: {
         page: pageNumber,
         limit: pageSize,
       },
-    });
+    };
+
+    // Save the result in Redis for 60 seconds.
+    if (redisClient.isReady) {
+      try {
+        await redisClient.setEx(cacheKey, 60, JSON.stringify(responseData));
+
+        console.log("CACHE STORED:", cacheKey);
+      } catch (cacheError) {
+        console.error("Redis cache write failed:", cacheError.message);
+      }
+    }
+
+    return res.status(200).json(responseData);
+
   } catch (error) {
     sendServerError(
       res,
@@ -205,11 +245,10 @@ export const createTicket = async (req, res) => {
         message: "Subject and description are required",
       });
     }
-    
+
     let result;
 
-
-    if(req.params.role === "user"){
+    if (req.params.role === "user") {
       result = await db
         .insert(tickets)
         .values({
@@ -237,6 +276,7 @@ export const createTicket = async (req, res) => {
         .returning();
     }
 
+    await invalidateTicketCache();
 
     return res.status(201).json({
       success: true,
@@ -325,6 +365,8 @@ export const updateTicket = async (req, res) => {
       .where(ticketFilter)
       .returning();
 
+    await invalidateTicketCache();
+    
     res.status(200).json({
       success: true,
       message: "Ticket updated successfully",
@@ -354,6 +396,8 @@ export const deleteTicket = async (req, res) => {
       });
     }
 
+    await invalidateTicketCache();
+    
     res.status(200).json({
       success: true,
       message: "Ticket deleted successfully",
